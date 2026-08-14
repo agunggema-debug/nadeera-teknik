@@ -5,8 +5,8 @@
 export const SITE = {
   title: "Nadeera Teknik — Jasa AC Bandung",
   description: "Jasa pasang, cuci, perbaikan & perawatan AC di Bandung dan sekitarnya. Teknisi berpengalaman, harga transparan, garansi pengerjaan. Pesan sekarang via WhatsApp.",
-  phoneDisplay: "+62 896-5854-1279",
-  phoneIntl: "6289658541279",
+  phoneDisplay: "+62 858-6122-9676",
+  phoneIntl: "6285861229676",
   email: "halo@nadeerateknik.com",
   domain: "nadeerateknik.com",
 };

@@ -1,0 +1,102 @@
+---
+// Pencacah pengunjung (global) di footer.
+// Layanan: CountAPI (gratis, persistent di server pihak ketiga, tanpa backend).
+// - "Kunjungan hari ini" memakai kunci per-tanggal sehingga otomatis reset tiap hari.
+// - Jika layanan tidak terjangkau, jumlah lokal per perangkat dipakai sebagai cadangan.
+// Untuk mengganti layanan, ubah konstanta BASE/NS dan format respons di bawah.
+---
+
+<div class="flex flex-wrap items-center gap-x-8 gap-y-4 text-sm">
+  <div class="flex items-center gap-3">
+    <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 text-electric-100">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-5 w-5" aria-hidden="true">
+        <path d="M12 3a7 7 0 0 0-7 7c0 4.5 3 8 7 10 4-2 7-5.5 7-10a7 7 0 0 0-7-7z" />
+        <circle cx="12" cy="10" r="2.2" />
+      </svg>
+    </span>
+    <div>
+      <p class="text-xs uppercase tracking-wide text-electric-100/60">Kunjungan hari ini</p>
+      <p class="font-extrabold text-white"><span id="visit-today">···</span></p>
+    </div>
+  </div>
+
+  <div class="flex items-center gap-3">
+    <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 text-electric-100">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="h-5 w-5" aria-hidden="true">
+        <circle cx="9" cy="8" r="3" /><circle cx="17" cy="9.5" r="2.5" />
+        <path d="M3 20c.8-3.2 3-5 6-5s5.2 1.8 6 5" />
+        <path d="M16 15.5c2.6.4 4.4 2 5 4.5" />
+      </svg>
+    </span>
+    <div>
+      <p class="text-xs uppercase tracking-wide text-electric-100/60">Total pengunjung</p>
+      <p class="font-extrabold text-white"><span id="visit-total">···</span></p>
+    </div>
+  </div>
+</div>
+
+<script>
+  const BASE = 'https://api.countapi.xyz';
+  const NS = 'nadeera-teknik-v1';
+
+  const now = new Date();
+  const ymd =
+    now.getFullYear() +
+    String(now.getMonth() + 1).padStart(2, '0') +
+    String(now.getDate()).padStart(2, '0');
+
+  const TOTAL_KEY = 'pengunjung-total';
+  const DAILY_KEY = 'kunjungan-' + ymd;
+  const MARK = 'nt_counted_' + ymd;
+
+  const totalEl = document.getElementById('visit-total') as HTMLElement;
+  const todayEl = document.getElementById('visit-today') as HTMLElement;
+
+  async function countAt(url: string): Promise<number | null> {
+    try {
+      const res = await fetch(url, { method: 'GET', cache: 'no-store' });
+      if (!res.ok) return null;
+      const data = await res.json();
+      return typeof data.value === 'number' ? data.value : null;
+    } catch {
+      return null;
+    }
+  }
+
+  // Cadangan: jumlah lokal per perangkat (tanpa layanan eksternal).
+  function localCounts(): { total: number; today: number } {
+    let total = Number(localStorage.getItem('nt_total') || 0);
+    let today = Number(localStorage.getItem('nt_today') || 0);
+    if (!localStorage.getItem(MARK)) {
+      total += 1;
+      today += 1;
+      localStorage.setItem('nt_total', String(total));
+      localStorage.setItem('nt_today', String(today));
+      localStorage.setItem(MARK, '1');
+    }
+    return { total, today };
+  }
+
+  (async () => {
+    const shouldCount = !localStorage.getItem(MARK);
+    const verb = shouldCount ? 'hit' : 'get';
+    const base = `${BASE}/${verb}/${NS}`;
+
+    const [totalVal, todayVal] = await Promise.all([
+      countAt(`${base}/${TOTAL_KEY}`),
+      countAt(`${base}/${DAILY_KEY}`),
+    ]);
+
+    if (totalVal === null || todayVal === null) {
+      // Layanan tidak terjangkau → pakai jumlah lokal.
+      const c = localCounts();
+      totalEl.textContent = c.total.toLocaleString('id-ID');
+      todayEl.textContent = c.today.toLocaleString('id-ID');
+      return;
+    }
+
+    totalEl.textContent = totalVal.toLocaleString('id-ID');
+    todayEl.textContent = todayVal.toLocaleString('id-ID');
+    if (shouldCount) localStorage.setItem(MARK, '1');
+  })();
+</script>

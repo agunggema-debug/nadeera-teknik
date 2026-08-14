@@ -18,6 +18,7 @@ rekomendasi *tech stack* pada `PRD_Nadeera_Teknik.md`.
 - [Catatan aset & performa](#catatan-aset--performa)
 - [Node version](#node-version)
 - [Git & version control](#git--version-control)
+- [Pencacah pengunjung (footer)](#-pencacah-pengunjung-footer)
 - [Deploy ke Vercel](#deploy-ke-vercel)
 
 ---
@@ -82,9 +83,9 @@ Semua data terpusat di **`src/site.ts`**:
 - **Kontak** (`SITE`): judul, deskripsi, nama, email, dan **nomor WhatsApp**.
 - **Layanan** (`SERVICES`), **Area** (`AREAS`), **Testimoni** (`TESTIMONIALS`), dan helper `waLink()` untuk tombol WhatsApp.
 
-> ⚠️ **Wajib sebelum go-live:** ganti nomor WhatsApp placeholder
-> `6281234567890` di `SITE.phoneIntl` dengan nomor resmi (format internasional,
-> tanpa `+`/spasi). Semua tombol "Pesan Teknisi" mengarah ke nomor ini.
+> ⚠️ **Nomor WhatsApp** dikonfigurasi di `SITE.phoneIntl` & `SITE.phoneDisplay`
+> (sudah diisi nomor resmi). Ubahlah di `src/site.ts` bila nomor berubah — semua
+> tombol "Pesan Teknisi" otomatis mengikuti.
 
 ---
 
@@ -123,6 +124,24 @@ Repo sudah di-*initialize* dengan dua commit awal. **`.gitignore`** mengecualika
 - `.env`, `.env.production` — kredensial.
 - `.vercel` & `.vercel/` — link/token lokal Vercel CLI.
 - log debug & file sistem (`.DS_Store`, `Thumbs.db`).
+
+---
+
+## 📊 Pencacah Pengunjung (Footer)
+
+Footer menampilkan **Total pengunjung** dan **Kunjungan hari ini**, dihitung oleh
+komponen `src/components/VisitorCounter.astro`:
+
+- **Layanan:** [CountAPI](https://countapi.xyz) — pencacah JSON gratis, persistent
+  di server pihak ketiga (tanpa backend/DB sendiri).
+- **Total** memakai kunci `pengunjung-total`; **harian** memakai kunci per-tanggal
+  (`kunjungan-YYYYMMDD`) sehingga otomatis "reset" setiap hari.
+- Setiap perangkat hanya menghitung +1 per hari (via `localStorage`) untuk
+  meniru angka pengunjung, bukan *reload* berulang.
+- **Fallback otomatis:** jika layanan tidak terjangkau, dipakai angka lokal di
+  `localStorage` — footer tidak pernah tampil kosong/rusak.
+- Untuk mengganti/memakai penyedia lain, ubah konstanta `BASE`/`NS` dan format
+  respons di `src/components/VisitorCounter.astro`.
 
 ---
 
