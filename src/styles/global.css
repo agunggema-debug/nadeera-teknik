@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+   Brand design tokens — PRD color scheme:
+   Electric Blue (kebersihan, teknologi, suhu dingin),
+   Clean White, aksen Oranye/Kuning untuk tombol CTA.
+--------------------------------------------------------------------------- */
+@theme {
+  --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, -apple-system,
+    'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+
+  --color-electric-50: #eef6ff;
+  --color-electric-100: #d9ecff;
+  --color-electric-200: #bcdcff;
+  --color-electric-300: #8ec4ff;
+  --color-electric-400: #59a2ff;
+  --color-electric-500: #2378ff;
+  --color-electric-600: #0058f5;
+  --color-electric-700: #0051e0;
+  --color-electric-800: #0743b0;
+  --color-electric-900: #0b3c8b;
+  --color-electric-950: #0a2354;
+
+  --color-accent-50: #fff8ed;
+  --color-accent-100: #ffefd4;
+  --color-accent-200: #ffdba8;
+  --color-accent-300: #ffc170;
+  --color-accent-400: #ff9c38;
+  --color-accent-500: #ff7f12;
+  --color-accent-600: #f06405;
+  --color-accent-700: #c74d07;
+  --color-accent-800: #9e3d0e;
+  --color-accent-900: #7f330f;
+
+  --color-cool-50: #f6f8fb;
+  --color-cool-100: #edf1f7;
+  --color-cool-600: #43536b;
+  --color-cool-700: #334155;
+  --color-cool-900: #0b1e3a;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
+body {
+  @apply font-sans text-cool-900 bg-white antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  background: var(--color-electric-500);
+  color: #fff;
+}
+
+/* Utility: subtle grid/cool background pattern */
+.cool-grid {
+  background-image:
+    linear-gradient(to right, rgb(237 241 247 / 0.6) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(237 241 247 / 0.6) 1px, transparent 1px);
+  background-size: 36px 36px;
+}

@@ -1,0 +1,35 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import Services from '../components/Services.astro';
+import ServiceAreas from '../components/ServiceAreas.astro';
+import Pricing from '../components/Pricing.astro';
+import Testimonials from '../components/Testimonials.astro';
+import CtaBand from '../components/CtaBand.astro';
+import Footer from '../components/Footer.astro';
+import FloatingWhatsApp from '../components/FloatingWhatsApp.astro';
+---
+
+<BaseLayout>
+  <a
+    href="#beranda"
+    class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:font-bold focus:text-electric-700 focus:shadow-lg"
+  >
+    Lewati ke konten utama
+  </a>
+
+  <Header />
+
+  <main>
+    <Hero />
+    <Services />
+    <ServiceAreas />
+    <Pricing />
+    <Testimonials />
+    <CtaBand />
+  </main>
+
+  <Footer />
+  <FloatingWhatsApp />
+</BaseLayout>

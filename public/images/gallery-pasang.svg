@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 480" width="640" height="480" role="img" aria-label="Pemasangan dan perawatan AC">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff8ed"/><stop offset="1" stop-color="#ffefd4"/></linearGradient>
+    <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2378ff"/><stop offset="1" stop-color="#0058f5"/></linearGradient>
+  </defs>
+  <rect width="640" height="480" fill="url(#bg)"/>
+  <g opacity="0.4"><circle cx="560" cy="90" r="150" fill="#ffffff"/><circle cx="80" cy="430" r="150" fill="#ffffff"/></g>
+  <rect x="200" y="120" width="240" height="120" rx="14" fill="url(#blue)"/>
+  <path d="M200 178h240" stroke="#ffffff" stroke-width="6" opacity="0.85"/>
+  <path d="M240 120v120M320 120v120M400 120v120" stroke="#bfe0ff" stroke-width="3" opacity="0.6"/>
+  <rect x="228" y="196" width="22" height="16" rx="3" fill="#0b3c8b"/>
+  <rect x="256" y="196" width="22" height="16" rx="3" fill="#0b3c8b"/>
+  <rect x="284" y="196" width="22" height="16" rx="3" fill="#0b3c8b"/>
+  <path d="M200 240c0 28 0 26 0 40M440 240c0 28 0 26 0 40M240 280v44M320 280v44M400 280v44" stroke="#0b3c8b" stroke-width="6" stroke-linecap="round"/>
+  <path d="M150 470c0-70 0-64 0-118a20 20 0 0 1 20-20h300a20 20 0 0 1 20 20v118" fill="#d9ecff" stroke="#0058f5" stroke-width="4"/>
+  <rect x="230" y="392" width="180" height="16" rx="6" fill="#ff9c38"/>
+  <path d="M150 122c0-22 14-40 34-46M110 470c0-30 0-26 0-38c0-6 5-11 11-11" stroke="#ffb347" stroke-width="5" fill="none" stroke-linecap="round"/>
+</svg>

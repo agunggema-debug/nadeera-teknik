@@ -1,0 +1,43 @@
+---
+import { AREAS, waLink } from '../site';
+---
+
+<section id="area" class="bg-electric-50 py-16 sm:py-24">
+  <div class="mx-auto max-w-6xl px-4 sm:px-6">
+    <div class="mx-auto max-w-2xl text-center">
+      <p class="text-sm font-bold uppercase tracking-widest text-electric-500">Area Layanan</p>
+      <h2 class="mt-3 text-3xl font-extrabold tracking-tight text-cool-900 sm:text-4xl">
+        Menjangkau Bandung Raya &amp; sekitarnya
+      </h2>
+      <p class="mt-4 text-lg leading-relaxed text-cool-700">
+        Teknisi kami siap meluncur ke lokasi Anda. Jika area belum tertera,
+        tanyakan langsung — kami tetap bisa membantu selama terjangkau.
+      </p>
+    </div>
+
+    <ul class="mt-10 flex flex-wrap justify-center gap-3">
+      {
+        AREAS.map((area) => (
+          <li>
+            <a
+              href={waLink(`Halo Nadeera Teknik, saya di ${area}. Apakah area ini terjangkau?`)}
+              target="_blank"
+              rel="noopener"
+              class="inline-flex items-center gap-2 rounded-full border border-electric-100 bg-white px-4 py-2.5 text-sm font-semibold text-cool-700 shadow-sm transition hover:border-electric-300 hover:text-electric-700"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 text-electric-500"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              {area}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <p class="mt-8 text-center text-sm text-cool-600">
+      Di luar daftar di atas?{' '}
+      <a href={waLink('Halo Nadeera Teknik, apakah area saya (sebutkan alamat) terjangkau?')} target="_blank" rel="noopener" class="font-bold text-electric-600 underline underline-offset-2 hover:text-electric-700">
+        Cek jangkauan via WhatsApp
+      </a>
+    </p>
+  </div>
+</section>

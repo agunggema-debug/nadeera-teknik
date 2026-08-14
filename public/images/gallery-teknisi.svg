@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 480" width="640" height="480" role="img" aria-label="Teknisi Nadeera Teknik sedang bekerja">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#eef6ff"/><stop offset="1" stop-color="#d9ecff"/></linearGradient>
+    <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2378ff"/><stop offset="1" stop-color="#0058f5"/></linearGradient>
+  </defs>
+  <rect width="640" height="480" fill="url(#bg)"/>
+  <g opacity="0.4">
+    <circle cx="120" cy="80" r="120" fill="#ffffff"/>
+    <circle cx="560" cy="430" r="160" fill="#ffffff"/>
+  </g>
+  <rect x="360" y="90" width="180" height="70" rx="12" fill="url(#blue)"/>
+  <rect x="365" y="70" width="170" height="22" rx="8" fill="#c7d9f5"/>
+  <path d="M250 470h160" stroke="#0058f5" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="300" cy="300" r="34" fill="#f3b56a" opacity="0.8"/>
+  <path d="M268 310c0 30 22 58 60 60 36-2 60-28 60-56 0-8-1-16-3-24" fill="#3a75c4"/>
+  <path d="M300 340c14 8 34 8 48 0" stroke="#1f3a5f" stroke-width="4" fill="none"/>
+  <circle cx="314" cy="306" r="3.4" fill="#1f3a5f"/><circle cx="330" cy="306" r="3.4" fill="#1f3a5f"/>
+  <path d="M312 324c6 5 14 5 20 0" stroke="#1f3a5f" stroke-width="3" fill="none"/>
+  <rect x="300" y="352" width="44" height="52" rx="8" fill="#0058f5"/>
+  <path d="M312 352v-20h24v20M300 376h-78a12 12 0 0 1-12-12v-58M344 376h70a12 12 0 0 0 12-12V288h-52" stroke="#0b3c8b" stroke-width="6" fill="none"/>
+  <rect x="262" y="292" width="44" height="14" rx="5" fill="#ff9c38"/>
+  <path d="M560 470c0-46 32-80 72-80v80" fill="#ff9c38" opacity="0.7"/>
+</svg>

@@ -1,0 +1,125 @@
+---
+import WhatsAppIcon from './icons/WhatsAppIcon.astro';
+import { waLink } from '../site';
+
+const trust = [
+  { title: 'Respon Cepat', desc: 'Teknisi siap dijadwalkan hari ini' },
+  { title: 'Harga Transparan', desc: 'Tanpa biaya tersembunyi' },
+  { title: 'Garansi Pengerjaan', desc: 'Dijamin oleh Nadeera Teknik' },
+];
+---
+
+<section id="beranda" class="relative overflow-hidden bg-electric-50">
+  <!-- dekorasi pending -->
+  <div class="cool-grid pointer-events-none absolute inset-0 opacity-70" aria-hidden="true"></div>
+  <div
+    class="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-electric-200/60 blur-3xl"
+    aria-hidden="true"
+  ></div>
+  <div
+    class="pointer-events-none absolute -bottom-28 -left-20 h-72 w-72 rounded-full bg-accent-200/50 blur-3xl"
+    aria-hidden="true"
+  ></div>
+
+  <div class="relative mx-auto grid max-w-6xl items-center gap-12 px-4 py-16 sm:px-6 sm:py-20 lg:grid-cols-2 lg:py-28">
+    <!-- Kolom teks -->
+    <div>
+      <span class="inline-flex items-center gap-2 rounded-full border border-electric-200 bg-white px-3.5 py-1.5 text-xs font-bold text-electric-700 shadow-sm">
+        <span class="h-2 w-2 rounded-full bg-accent-500"></span>
+        Melayani Bandung Raya &amp; Sekitarnya
+      </span>
+
+      <h1 class="mt-5 text-4xl font-extrabold leading-[1.1] tracking-tight text-cool-900 sm:text-5xl lg:text-[3.4rem]">
+        Solusi AC <span class="text-electric-600">Dingin</span> &amp;{' '}
+        <span class="text-electric-600">Sehat</span> di Bandung
+      </h1>
+
+      <p class="mt-5 max-w-xl text-lg leading-relaxed text-cool-700">
+        Teknisi berpengalaman, harga transparan, dan garansi pengerjaan. Dari cuci,
+        pasang, perbaikan, hingga kontrak maintenance — pesan sekarang dan AC Anda
+        beres hari ini juga.
+      </p>
+
+      <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+        <a
+          href={waLink('Halo Nadeera Teknik! Saya butuh jasa AC. Bisa dibantu?')}
+          target="_blank"
+          rel="noopener"
+          class="inline-flex items-center justify-center gap-2.5 rounded-full bg-accent-500 px-7 py-4 text-base font-bold text-white shadow-lg shadow-orange-500/30 transition hover:-translate-y-0.5 hover:bg-accent-600"
+        >
+          <WhatsAppIcon class="h-5 w-5" />
+          Pesan Teknisi Sekarang
+        </a>
+        <a
+          href="#layanan"
+          class="inline-flex items-center justify-center gap-2 rounded-full border border-electric-200 bg-white px-7 py-4 text-base font-bold text-electric-700 transition hover:border-electric-300 hover:bg-electric-50"
+        >
+          Lihat Layanan
+        </a>
+      </div>
+
+      <!-- Indikator kepercayaan -->
+      <dl class="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-3">
+        {
+          trust.map((item) => (
+            <div class="rounded-2xl border border-white/70 bg-white/70 p-4 backdrop-blur-sm">
+              <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-electric-100 text-electric-600">
+                <svg viewBox="0 0 24 24" fill="currentColor" class="h-4 w-4" aria-hidden="true">
+                  <path
+                    fill-rule="evenodd"
+                    d="M12 2a8 8 0 0 0-6.4 12.9l-.8 4.6a1 1 0 0 0 1.4 1l4-2A8 8 0 1 0 12 2zm0 2a6 6 0 1 1-3.4 11l-.3-.2-1.7.85.5-2.9-.2-.3A6 6 0 0 1 12 4z"
+                  />
+                </svg>
+              </span>
+              <dt class="mt-3 text-sm font-bold text-cool-900">{item.title}</dt>
+              <dd class="mt-0.5 text-xs leading-snug text-cool-600">{item.desc}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+
+    <!-- Ilustrasi grafis modern -->
+    <div class="relative mx-auto w-full max-w-md lg:max-w-none">
+      <div
+        class="rounded-3xl border border-white bg-white/80 p-6 shadow-2xl shadow-electric-900/10 backdrop-blur-sm sm:p-8"
+        aria-hidden="true"
+      >
+        <p class="text-xs font-bold uppercase tracking-widest text-electric-500">Nadeera Teknik</p>
+        <div class="mt-4 flex items-end justify-between gap-4">
+          <div class="relative">
+            <div class="flex h-28 w-28 items-center justify-center rounded-2xl bg-gradient-to-br from-electric-500 to-electric-700">
+              <svg viewBox="0 0 24 24" fill="none" class="h-12 w-12 text-white" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="8" rx="2" />
+                <path d="M3 8h18M9 4v8M6.5 16a3 3 0 1 0 3-3H6.5v3zm0 0h4M7 19h3" />
+              </svg>
+            </div>
+            <span class="absolute -bottom-2 -right-2 flex h-8 w-8 items-center justify-center rounded-full bg-accent-500 text-white shadow">
+              <svg viewBox="0 0 24 24" fill="none" class="h-4 w-4 text-white" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 6L9 17l-5-5" />
+              </svg>
+            </span>
+          </div>
+          <div class="text-right">
+            <div class="flex items-center justify-end gap-0.5 text-accent-500">
+              <span class="text-lg">★★★★★</span>
+            </div>
+            <p class="mt-1 text-2xl font-extrabold text-cool-900">24°C</p>
+            <p class="text-xs text-cool-600">Dingin &amp; bebas bakteri</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Badge melayang -->
+      <div class="absolute -bottom-5 left-4 flex items-center gap-3 rounded-2xl bg-white p-3 pr-5 shadow-lg ring-1 ring-cool-100">
+        <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-green-100 text-green-600">
+          <svg viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5"><path d="M12 2a10 10 0 0 0-8.13 15.9L2.2 22l4.3-1.5A10 10 0 1 0 12 2z" /></svg>
+        </span>
+        <div>
+          <p class="text-sm font-bold text-cool-900">Respon cepat</p>
+          <p class="text-xs text-cool-600">via WhatsApp dalam hitungan menit</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

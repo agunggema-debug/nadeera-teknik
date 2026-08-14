@@ -1,0 +1,105 @@
+---
+import Logo from './Logo.astro';
+import WhatsAppIcon from './icons/WhatsAppIcon.astro';
+import { waLink } from '../site';
+
+const nav = [
+  { href: '#layanan', label: 'Layanan' },
+  { href: '#area', label: 'Area Layanan' },
+  { href: '#harga', label: 'Harga' },
+  { href: '#testimoni', label: 'Testimoni' },
+];
+---
+
+<header class="sticky top-0 z-40 w-full border-b border-cool-100 bg-white/85 backdrop-blur-md">
+  <div class="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
+    <Logo size={38} />
+
+    <!-- Navigasi desktop -->
+    <nav class="hidden items-center gap-7 lg:flex" aria-label="Navigasi utama">
+      {
+        nav.map((item) => (
+          <a
+            href={item.href}
+            class="text-sm font-semibold text-cool-700 transition-colors hover:text-electric-600"
+          >
+            {item.label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <div class="flex items-center gap-3">
+      <a
+        href={waLink('Halo Nadeera Teknik, saya ingin konsultasi jasa AC.')}
+        target="_blank"
+        rel="noopener"
+        class="hidden items-center gap-2 rounded-full bg-accent-500 px-5 py-2.5 text-sm font-bold text-white shadow-sm shadow-orange-500/30 transition hover:bg-accent-600 sm:inline-flex"
+      >
+        <WhatsAppIcon class="h-4 w-4" />
+        Pesan Teknisi
+      </a>
+
+      <!-- Tombol menu mobile -->
+      <button
+        id="menu-toggle"
+        type="button"
+        aria-label="Buka menu"
+        aria-expanded="false"
+        aria-controls="mobile-menu"
+        class="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-cool-100 text-cool-700 lg:hidden"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="h-6 w-6">
+          <path d="M4 7h16M4 12h16M4 17h16" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Menu mobile -->
+  <div id="mobile-menu" class="hidden border-t border-cool-100 bg-white px-4 py-4 lg:hidden">
+    <nav class="flex flex-col gap-1" aria-label="Navigasi mobile">
+      {
+        nav.map((item) => (
+          <a
+            href={item.href}
+            data-menu-link
+            class="rounded-lg px-3 py-3 text-base font-semibold text-cool-900 hover:bg-cool-50"
+          >
+            {item.label}
+          </a>
+        ))
+      }
+      <a
+        href={waLink('Halo Nadeera Teknik, saya ingin konsultasi jasa AC.')}
+        target="_blank"
+        rel="noopener"
+        data-menu-link
+        class="mt-2 flex items-center justify-center gap-2 rounded-full bg-accent-500 px-5 py-3 text-base font-bold text-white"
+      >
+        <WhatsAppIcon class="h-5 w-5" />
+        Pesan Teknisi Sekarang
+      </a>
+    </nav>
+  </div>
+</header>
+
+<script>
+  const toggle = document.getElementById('menu-toggle') as HTMLButtonElement;
+  const menu = document.getElementById('mobile-menu') as HTMLElement;
+
+  function setOpen(open: boolean) {
+    menu.classList.toggle('hidden', !open);
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.setAttribute('aria-label', open ? 'Tutup menu' : 'Buka menu');
+  }
+
+  toggle?.addEventListener('click', () => {
+    setOpen(menu.classList.contains('hidden'));
+  });
+
+  // Tutup menu ketika sebuah link diklik
+  document.querySelectorAll<HTMLAnchorElement>('[data-menu-link]').forEach((link) => {
+    link.addEventListener('click', () => setOpen(false));
+  });
+</script>

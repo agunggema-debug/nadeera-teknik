@@ -1,0 +1,71 @@
+---
+import { formatRupiah, waLink } from '../site';
+
+const rows = [
+  { service: 'Cuci AC Indoor + Outdoor', unit: 'per unit', price: 75000, note: 'AC split standar 0.5–1 PK' },
+  { service: 'Cuci AC (Unit LG/Inverter)', unit: 'per unit', price: 95000, note: 'Di atas 1.5 PK dikenakan biaya menyesuaikan' },
+  { service: 'Isi Freon R32 / R410A', unit: 'per unit', price: 150000, note: 'Tergantung kapasitas & tekanan' },
+  { service: 'Bongkar Pasang AC', unit: 'per unit', price: 300000, note: 'Jarak lokasi & ukuran memengaruhi harga' },
+  { service: 'Pasang AC Baru (instalasi)', unit: 'per unit', price: 350000, note: 'Belum termasuk pipa & jasa tambahan' },
+  { service: 'Kontrak Maintenance', unit: 'per unit/bln', price: 50000, note: 'Min. 3 unit, servis rutin terjadwal' },
+];
+---
+
+<section id="harga" class="bg-white py-16 sm:py-24">
+  <div class="mx-auto max-w-6xl px-4 sm:px-6">
+    <div class="mx-auto max-w-2xl text-center">
+      <p class="text-sm font-bold uppercase tracking-widest text-electric-500">Harga &amp; Transparansi</p>
+      <h2 class="mt-3 text-3xl font-extrabold tracking-tight text-cool-900 sm:text-4xl">
+        Estimasi harga dasar, tanpa biaya tersembunyi
+      </h2>
+      <p class="mt-4 text-lg leading-relaxed text-cool-700">
+        Anda tahu perkiraan biaya sebelum teknisi datang. Harga final dikonfirmasi
+        di awal setelah pengecekan.
+      </p>
+    </div>
+
+    <div class="mt-10 overflow-hidden rounded-3xl border border-cool-100 shadow-lg shadow-electric-900/5">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm">
+          <caption class="sr-only">Tabel estimasi harga dasar jasa AC Nadeera Teknik</caption>
+          <thead>
+            <tr class="bg-electric-950 text-white">
+              <th scope="col" class="px-5 py-4 font-bold">Layanan</th>
+              <th scope="col" class="px-5 py-4 font-bold">Satuan</th>
+              <th scope="col" class="px-5 py-4 font-bold">Estimasi</th>
+              <th scope="col" class="px-5 py-4 font-bold">Catatan</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-cool-100 bg-white">
+            {
+              rows.map((row, i) => (
+                <tr class:list={[i % 2 === 1 && 'bg-cool-50/60']}>
+                  <th scope="row" class="px-5 py-4 font-semibold text-cool-900">{row.service}</th>
+                  <td class="px-5 py-4 text-cool-600">{row.unit}</td>
+                  <td class="px-5 py-4 font-extrabold text-electric-600">{formatRupiah(row.price)}</td>
+                  <td class="px-5 py-4 text-cool-600">{row.note}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <p class="mt-5 text-sm text-cool-600">
+      * Estimasi ini adalah angka dasar dan dapat berubah sesuai tipe AC, kapasitas (PK), dan kondisi unit.
+      Biaya dikonfirmasi transparan sebelum pengerjaan dimulai.
+    </p>
+
+    <div class="mt-8 flex justify-center">
+      <a
+        href={waLink('Halo Nadeera Teknik, saya mau minta penawaran harga terbaik untuk unit AC saya.')}
+        target="_blank"
+        rel="noopener"
+        class="inline-flex items-center gap-2 rounded-full bg-electric-600 px-7 py-4 text-base font-bold text-white shadow-lg shadow-electric-600/25 transition hover:-translate-y-0.5 hover:bg-electric-700"
+      >
+        Minta Penawaran Sekarang →
+      </a>
+    </div>
+  </div>
+</section>

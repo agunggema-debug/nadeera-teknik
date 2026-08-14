@@ -1,0 +1,60 @@
+---
+import '../styles/global.css';
+import { SITE } from '../site';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title = SITE.title, description = SITE.description } = Astro.props;
+---
+
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+
+    <!-- Open Graph / Social -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Nadeera Teknik" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content="/logo.png" />
+
+    <!-- Local SEO -->
+    <meta name="keywords" content="Jasa AC Bandung, Service AC Ciparay, Cuci AC, Pasang AC, Bongkar Pasang AC, Isi Freon, Maintenance AC, Nadeera Teknik" />
+    <meta name="theme-color" content="#0058f5" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Fonts: Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Local Business structured data untuk Local SEO -->
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "HVACBusiness",
+      "name": "Nadeera Teknik",
+      "description": SITE.description,
+      "url": "https://" + SITE.domain,
+      "logo": "https://" + SITE.domain + "/logo.png",
+      "telephone": "+" + SITE.phoneIntl,
+      "email": SITE.email,
+      "areaServed": "Bandung dan sekitarnya",
+      "openingHours": "Mo-Su 08:00-20:00"
+    })} />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

@@ -1,0 +1,37 @@
+---
+interface Props {
+  /** Tambahan class pada link logo */
+  class?: string;
+  /** Ukuran tinggi logo dalam px */
+  size?: number;
+  theme?: 'light' | 'dark';
+}
+const { class: className, size = 40, theme = 'dark' } = Astro.props;
+---
+
+<a
+  href="#beranda"
+  aria-label="Nadeera Teknik - beranda"
+  class:list={['inline-flex shrink-0 items-center gap-2.5', className]}
+>
+  <img
+    src="/logo.png"
+    alt="Logo Nadeera Teknik"
+    width={size}
+    height={size}
+    style={`height:${size}px;width:${size}px`}
+    class="object-contain"
+    fetchpriority="high"
+  />
+  <span
+    class:list={[
+      'font-extrabold tracking-tight leading-none',
+      theme === 'light' ? 'text-white' : 'text-cool-900',
+    ]}
+  >
+    Nadeera
+    <span class="block text-[0.68rem] font-bold uppercase tracking-[0.2em] text-electric-500">
+      Teknik
+    </span>
+  </span>
+</a>

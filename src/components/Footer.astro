@@ -1,0 +1,66 @@
+---
+import Logo from './Logo.astro';
+import WhatsAppIcon from './icons/WhatsAppIcon.astro';
+import { SITE, waLink } from '../site';
+
+const quickLinks = [
+  { href: '#layanan', label: 'Layanan Kami' },
+  { href: '#area', label: 'Area Layanan' },
+  { href: '#harga', label: 'Harga' },
+  { href: '#portofolio', label: 'Portofolio' },
+  { href: '#testimoni', label: 'Testimoni' },
+];
+---
+
+<footer class="bg-electric-950 text-white">
+  <div class="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:px-6 lg:grid-cols-[1.5fr_1fr_1.2fr]">
+    <div>
+      <Logo theme="light" size={40} />
+      <p class="mt-4 max-w-sm text-sm leading-relaxed text-electric-100/80">
+        Penyedia jasa pemasangan, perawatan, dan perbaikan AC berbiaya transparan
+        di Bandung dan sekitarnya. Dipercaya untuk hunian maupun bisnis.
+      </p>
+      <p class="mt-4 text-sm text-electric-100/60">Jam operasional: setiap hari, 08.00–20.00 WIB</p>
+    </div>
+
+    <nav aria-label="Tautan cepat">
+      <h3 class="text-sm font-bold uppercase tracking-widest text-electric-100/60">Tautan</h3>
+      <ul class="mt-4 space-y-2.5">
+        {
+          quickLinks.map((l) => (
+            <li>
+              <a href={l.href} class="text-sm text-electric-100/90 transition hover:text-white">{l.label}</a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div>
+      <h3 class="text-sm font-bold uppercase tracking-widest text-electric-100/60">Hubungi Kami</h3>
+      <ul class="mt-4 space-y-3 text-sm text-electric-100/90">
+        <li>
+          <a href={waLink('Halo Nadeera Teknik!')} target="_blank" rel="noopener" class="inline-flex items-center gap-2.5 transition hover:text-white">
+            <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-white/10"><WhatsAppIcon class="h-4 w-4" /></span>
+            WhatsApp: {SITE.phoneDisplay}
+          </a>
+        </li>
+        <li>
+          <a href={`mailto:${SITE.email}`} class="inline-flex items-center gap-2.5 transition hover:text-white">
+            <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-white/10">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+            </span>
+            {SITE.email}
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="border-t border-white/10">
+    <div class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-2 px-4 py-5 text-xs text-electric-100/60 sm:flex-row sm:px-6">
+      <p>© {new Date().getFullYear()} Nadeera Teknik. Seluruh hak cipta dilindungi.</p>
+      <p>Jasa AC Bandung • Service AC Ciparay &amp; Sekitarnya</p>
+    </div>
+  </div>
+</footer>
