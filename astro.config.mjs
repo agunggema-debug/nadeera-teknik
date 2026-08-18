@@ -1,6 +1,7 @@
-import { defineConfig } from 'astro/config';
-import tailwindcss from '@tailwindcss/vite';
-import node from '@astrojs/node';
+import { defineConfig } from "astro/config";
+import tailwindcss from "@tailwindcss/vite";
+import node from "@astrojs/node";
+import vercel from "@astrojs/vercel/serverless";
 
 // https://astro.build/config
 //
@@ -8,9 +9,9 @@ import node from '@astrojs/node';
 // dibaca langsung dari Supabase saat halaman diminta, sehingga perubahan
 // dari dashboard admin langsung tampil di situs publik tanpa build ulang.
 export default defineConfig({
-  site: 'https://nadeerateknik.com',
-  output: 'server',
-  adapter: node({ mode: 'standalone' }),
+  site: "https://nadeerateknik.com",
+  output: "server",
+  adapter: vercel(),
   vite: {
     plugins: [tailwindcss()],
   },
