@@ -9,6 +9,11 @@ import Testimonials from '../components/Testimonials.astro';
 import CtaBand from '../components/CtaBand.astro';
 import Footer from '../components/Footer.astro';
 import FloatingWhatsApp from '../components/FloatingWhatsApp.astro';
+import { getSiteContent } from '../lib/site-content';
+
+// Konten diambil dari Supabase saat halaman diminta (SSR), dengan fallback
+// ke konten default bila Supabase belum dikonfigurasi / tabel masih kosong.
+const content = await getSiteContent();
 ---
 
 <BaseLayout>
@@ -19,17 +24,17 @@ import FloatingWhatsApp from '../components/FloatingWhatsApp.astro';
     Lewati ke konten utama
   </a>
 
-  <Header />
+  <Header content={content.navigation} />
 
   <main>
-    <Hero />
-    <Services />
-    <ServiceAreas />
-    <Pricing />
-    <Testimonials />
-    <CtaBand />
+    <Hero content={content.hero} />
+    <Services content={content.services} />
+    <ServiceAreas content={content.areas} />
+    <Pricing content={content.pricing} />
+    <Testimonials content={content.testimonials} portfolio={content.portfolio} />
+    <CtaBand content={content.cta} />
   </main>
 
-  <Footer />
+  <Footer content={content.footer} />
   <FloatingWhatsApp />
 </BaseLayout>

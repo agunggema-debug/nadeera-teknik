@@ -1,12 +1,14 @@
 ---
 import WhatsAppIcon from './icons/WhatsAppIcon.astro';
 import { waLink } from '../site';
+import { DEFAULT_CONTENT, type SiteContent } from '../lib/default-content';
 
-const trust = [
-  { title: 'Respon Cepat', desc: 'Teknisi siap dijadwalkan hari ini' },
-  { title: 'Harga Transparan', desc: 'Tanpa biaya tersembunyi' },
-  { title: 'Garansi Pengerjaan', desc: 'Dijamin oleh Nadeera Teknik' },
-];
+interface Props {
+  /** Seksi hero — opsional, fallback ke DEFAULT_CONTENT.hero */
+  content?: SiteContent['hero'];
+}
+const c = Astro.props.content ?? DEFAULT_CONTENT.hero;
+const trust = c.trust;
 ---
 
 <section id="beranda" class="relative overflow-hidden bg-electric-50">
@@ -26,18 +28,24 @@ const trust = [
     <div>
       <span class="inline-flex items-center gap-2 rounded-full border border-electric-200 bg-white px-3.5 py-1.5 text-xs font-bold text-electric-700 shadow-sm">
         <span class="h-2 w-2 rounded-full bg-accent-500"></span>
-        Melayani Bandung Raya &amp; Sekitarnya
+        {c.eyebrow}
       </span>
 
       <h1 class="mt-5 text-4xl font-extrabold leading-[1.1] tracking-tight text-cool-900 sm:text-5xl lg:text-[3.4rem]">
-        Solusi AC <span class="text-electric-600">Dingin</span> &amp;{' '}
-        <span class="text-electric-600">Sehat</span> di Bandung
+        {c.titleStart}{' '}
+        {
+          c.titleHighlight.map((w, i) => (
+            <Fragment>
+              {i > 0 ? ' & ' : ''}
+              <span class="text-electric-600">{w}</span>
+            </Fragment>
+          ))
+        }{' '}
+        {c.titleEnd}
       </h1>
 
       <p class="mt-5 max-w-xl text-lg leading-relaxed text-cool-700">
-        Teknisi berpengalaman, harga transparan, dan garansi pengerjaan. Dari cuci,
-        pasang, perbaikan, hingga kontrak maintenance — pesan sekarang dan AC Anda
-        beres hari ini juga.
+        {c.subtitle}
       </p>
 
       <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -48,13 +56,13 @@ const trust = [
           class="inline-flex items-center justify-center gap-2.5 rounded-full bg-accent-500 px-7 py-4 text-base font-bold text-white shadow-lg shadow-orange-500/30 transition hover:-translate-y-0.5 hover:bg-accent-600"
         >
           <WhatsAppIcon class="h-5 w-5" />
-          Pesan Teknisi Sekarang
+          {c.ctaPrimary}
         </a>
         <a
           href="#layanan"
           class="inline-flex items-center justify-center gap-2 rounded-full border border-electric-200 bg-white px-7 py-4 text-base font-bold text-electric-700 transition hover:border-electric-300 hover:bg-electric-50"
         >
-          Lihat Layanan
+          {c.ctaSecondary}
         </a>
       </div>
 
@@ -104,8 +112,8 @@ const trust = [
             <div class="flex items-center justify-end gap-0.5 text-accent-500">
               <span class="text-lg">★★★★★</span>
             </div>
-            <p class="mt-1 text-2xl font-extrabold text-cool-900">24°C</p>
-            <p class="text-xs text-cool-600">Dingin &amp; bebas bakteri</p>
+            <p class="mt-1 text-2xl font-extrabold text-cool-900">{c.tempLabel}</p>
+            <p class="text-xs text-cool-600">{c.tempCaption}</p>
           </div>
         </div>
       </div>

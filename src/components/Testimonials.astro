@@ -1,11 +1,15 @@
 ---
-import { TESTIMONIALS } from '../site';
+import { DEFAULT_CONTENT, type SiteContent } from '../lib/default-content';
 
-const gallery = [
-  { src: '/images/gallery-teknisi.svg', alt: 'Teknisi Nadeera Teknik sedang menangani unit AC', label: 'Servis rutin' },
-  { src: '/images/gallery-pasang.svg', alt: 'Proses pemasangan unit AC baru', label: 'Instalasi baru' },
-  { src: '/images/gallery-cuci.svg', alt: 'Pembersihan unit AC indoor', label: 'Cuci AC' },
-];
+interface Props {
+  /** Seksi testimoni — opsional, fallback ke DEFAULT_CONTENT.testimonials */
+  content?: SiteContent['testimonials'];
+  /** Seksi portofolio — opsional, fallback ke DEFAULT_CONTENT.portfolio */
+  portfolio?: SiteContent['portfolio'];
+}
+const c = Astro.props.content ?? DEFAULT_CONTENT.testimonials;
+const p = Astro.props.portfolio ?? DEFAULT_CONTENT.portfolio;
+const gallery = p.items;
 
 function stars(n: number) {
   return '★'.repeat(n) + '☆'.repeat(5 - n);
@@ -16,18 +20,18 @@ function stars(n: number) {
 <section id="testimoni" class="bg-electric-50 py-16 sm:py-24">
   <div class="mx-auto max-w-6xl px-4 sm:px-6">
     <div class="mx-auto max-w-2xl text-center">
-      <p class="text-sm font-bold uppercase tracking-widest text-electric-500">Testimoni Pelanggan</p>
+      <p class="text-sm font-bold uppercase tracking-widest text-electric-500">{c.eyebrow}</p>
       <h2 class="mt-3 text-3xl font-extrabold tracking-tight text-cool-900 sm:text-4xl">
-        Dipercaya pelanggan di Bandung Raya
+        {c.title}
       </h2>
       <p class="mt-4 text-lg leading-relaxed text-cool-700">
-        Kepuasan pelanggan adalah bukti kualitas kami.
+        {c.subtitle}
       </p>
     </div>
 
     <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
       {
-        TESTIMONIALS.map((t) => (
+        c.items.map((t) => (
           <figure class="flex flex-col rounded-3xl border border-white bg-white p-6 shadow-sm">
             <span class="text-base text-accent-500" aria-label={`Rating ${t.star} dari 5 bintang`}>
               {stars(t.star)}
@@ -56,12 +60,12 @@ function stars(n: number) {
   <div class="mx-auto max-w-6xl px-4 sm:px-6">
     <div class="flex flex-wrap items-end justify-between gap-4">
       <div class="max-w-xl">
-        <p class="text-sm font-bold uppercase tracking-widest text-electric-500">Portofolio</p>
+        <p class="text-sm font-bold uppercase tracking-widest text-electric-500">{p.eyebrow}</p>
         <h2 class="mt-3 text-3xl font-extrabold tracking-tight text-cool-900 sm:text-4xl">
-          Pengerjaan yang rapi &amp; profesional
+          {p.title}
         </h2>
       </div>
-      <p class="text-sm text-cool-600">Sebagian dokumentasi pekerjaan tim kami.</p>
+      <p class="text-sm text-cool-600">{p.note}</p>
     </div>
 
     <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">

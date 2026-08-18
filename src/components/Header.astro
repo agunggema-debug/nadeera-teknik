@@ -2,13 +2,14 @@
 import Logo from './Logo.astro';
 import WhatsAppIcon from './icons/WhatsAppIcon.astro';
 import { waLink } from '../site';
+import { DEFAULT_CONTENT, type SiteContent } from '../lib/default-content';
 
-const nav = [
-  { href: '#layanan', label: 'Layanan' },
-  { href: '#area', label: 'Area Layanan' },
-  { href: '#harga', label: 'Harga' },
-  { href: '#testimoni', label: 'Testimoni' },
-];
+interface Props {
+  /** Seksi navigasi — opsional, fallback ke DEFAULT_CONTENT.navigation */
+  content?: SiteContent['navigation'];
+}
+const nav = Astro.props.content?.links ?? DEFAULT_CONTENT.navigation.links;
+const waHref = waLink('Halo Nadeera Teknik, saya ingin konsultasi jasa AC.');
 ---
 
 <header class="sticky top-0 z-40 w-full border-b border-cool-100 bg-white/85 backdrop-blur-md">
@@ -31,13 +32,27 @@ const nav = [
 
     <div class="flex items-center gap-3">
       <a
-        href={waLink('Halo Nadeera Teknik, saya ingin konsultasi jasa AC.')}
+        href={waHref}
         target="_blank"
         rel="noopener"
         class="hidden items-center gap-2 rounded-full bg-accent-500 px-5 py-2.5 text-sm font-bold text-white shadow-sm shadow-orange-500/30 transition hover:bg-accent-600 sm:inline-flex"
       >
         <WhatsAppIcon class="h-4 w-4" />
         Pesan Teknisi
+      </a>
+
+      <!-- Tombol Login / Dashboard staf -->
+      <a
+        href="/dashboard"
+        id="header-auth-link"
+        data-auth-mode="anonymous"
+        class="hidden items-center gap-2 rounded-full border border-electric-200 bg-white px-5 py-2.5 text-sm font-bold text-electric-700 shadow-sm transition hover:border-electric-300 hover:bg-electric-50 sm:inline-flex"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4" aria-hidden="true">
+          <rect x="4" y="11" width="16" height="10" rx="2" />
+          <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+        </svg>
+        <span id="header-auth-label">Login</span>
       </a>
 
       <!-- Tombol menu mobile -->
@@ -71,7 +86,19 @@ const nav = [
         ))
       }
       <a
-        href={waLink('Halo Nadeera Teknik, saya ingin konsultasi jasa AC.')}
+        href="/dashboard"
+        data-menu-link
+        data-auth-mode="anonymous"
+        class="flex items-center gap-2 rounded-lg px-3 py-3 text-base font-semibold text-electric-700 hover:bg-electric-50"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5" aria-hidden="true">
+          <rect x="4" y="11" width="16" height="10" rx="2" />
+          <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+        </svg>
+        <span>Login</span>
+      </a>
+      <a
+        href={waHref}
         target="_blank"
         rel="noopener"
         data-menu-link
@@ -84,22 +111,216 @@ const nav = [
   </div>
 </header>
 
+<!-- ====================== Popup Login Staf ====================== -->
+<div
+  id="login-modal"
+  class="fixed inset-0 z-[70] hidden items-center justify-center bg-cool-900/50 p-4 backdrop-blur-sm"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="login-modal-title"
+>
+  <div class="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl sm:p-8">
+    <!-- Tampilan form login -->
+    <div id="login-view">
+      <div class="flex items-start justify-between">
+        <span class="flex h-12 w-12 items-center justify-center rounded-2xl bg-electric-100 text-electric-700">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6" aria-hidden="true">
+            <rect x="4" y="11" width="16" height="10" rx="2" />
+            <path d="M8 11V7a4 4 0 0 1 8 0v4" />
+          </svg>
+        </span>
+        <button
+          id="login-modal-close"
+          type="button"
+          aria-label="Tutup"
+          class="rounded-lg p-1.5 text-cool-600 transition hover:bg-cool-100 hover:text-cool-900"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="h-5 w-5"><path d="M6 6l12 12M18 6L6 18" /></svg>
+        </button>
+      </div>
+
+      <h2 id="login-modal-title" class="mt-5 text-2xl font-extrabold tracking-tight text-cool-900">
+        Login Staf
+      </h2>
+      <p class="mt-1.5 text-sm text-cool-600">
+        Masuk menggunakan akun Google untuk membuka dashboard pengelolaan website.
+      </p>
+
+      <!-- Tombol Sign in with Google -->
+      <button
+        id="google-signin-btn"
+        type="button"
+        class="mt-6 flex w-full items-center justify-center gap-3 rounded-2xl border border-cool-200 bg-white px-5 py-3.5 text-base font-semibold text-cool-900 shadow-sm transition hover:border-cool-300 hover:bg-cool-50 active:scale-[0.99]"
+      >
+        <svg viewBox="0 0 24 24" class="h-5 w-5" aria-hidden="true">
+          <path fill="#4285F4" d="M23.5 12.27c0-.85-.08-1.66-.22-2.45H12v4.64h6.45a5.52 5.52 0 0 1-2.4 3.62v3h3.88c2.27-2.09 3.57-5.17 3.57-8.81z" />
+          <path fill="#34A853" d="M12 24c3.24 0 5.96-1.08 7.94-2.91l-3.88-3c-1.08.72-2.45 1.15-4.06 1.15-3.12 0-5.77-2.11-6.71-4.94H1.27v3.1A12 12 0 0 0 12 24z" />
+          <path fill="#FBBC05" d="M5.29 14.3a7.2 7.2 0 0 1 0-4.6v-3.1H1.27a12 12 0 0 0 0 10.8l4.02-3.1z" />
+          <path fill="#EA4335" d="M12 4.76c1.76 0 3.34.6 4.58 1.79l3.44-3.44A11.97 11.97 0 0 0 1.27 6.6l4.02 3.1C6.23 6.87 8.88 4.76 12 4.76z" />
+        </svg>
+        Sign in with Google
+      </button>
+
+      <!-- Kalimat khusus staff -->
+      <p class="mt-4 text-center text-xs text-cool-600">
+        khusus untuk staff <span class="font-bold text-electric-700">nadeera teknik</span>
+      </p>
+
+      <!-- Pesan error / status -->
+      <p id="login-error" class="mt-4 hidden rounded-xl bg-red-50 px-4 py-3 text-center text-sm font-semibold text-red-700"></p>
+    </div>
+
+    <!-- Tampilan loading -->
+    <div id="login-loading" class="hidden py-14 text-center">
+      <svg class="mx-auto h-10 w-10 animate-spin text-electric-600" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 0 1 8-8v4a4 4 0 0 0-4 4H4z" />
+      </svg>
+      <p class="mt-4 text-sm font-semibold text-cool-700">Mengarahkan ke Google…</p>
+    </div>
+  </div>
+</div>
+
 <script>
+  import { isSupabaseConfigured, supabase, authRedirectTo, describeAuthError } from '../lib/supabase';
+
+  // ---- Toggle menu mobile ----
   const toggle = document.getElementById('menu-toggle') as HTMLButtonElement;
   const menu = document.getElementById('mobile-menu') as HTMLElement;
 
   function setOpen(open: boolean) {
     menu.classList.toggle('hidden', !open);
-    toggle.setAttribute('aria-expanded', String(open));
-    toggle.setAttribute('aria-label', open ? 'Tutup menu' : 'Buka menu');
+    toggle?.setAttribute('aria-expanded', String(open));
+    toggle?.setAttribute('aria-label', open ? 'Tutup menu' : 'Buka menu');
   }
 
   toggle?.addEventListener('click', () => {
     setOpen(menu.classList.contains('hidden'));
   });
-
-  // Tutup menu ketika sebuah link diklik
   document.querySelectorAll<HTMLAnchorElement>('[data-menu-link]').forEach((link) => {
     link.addEventListener('click', () => setOpen(false));
   });
+
+  // ---- Popup login ----
+  const modal = document.getElementById('login-modal') as HTMLElement;
+  const loginView = document.getElementById('login-view') as HTMLElement;
+  const loadingView = document.getElementById('login-loading') as HTMLElement;
+  const errorEl = document.getElementById('login-error') as HTMLElement;
+  const closeBtn = document.getElementById('login-modal-close') as HTMLButtonElement;
+  const googleBtn = document.getElementById('google-signin-btn') as HTMLButtonElement;
+
+  const authLinks = Array.from(
+    document.querySelectorAll<HTMLAnchorElement>('[data-auth-mode="anonymous"]')
+  );
+
+  function openModal() {
+    if (!modal) return;
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    loginView.classList.remove('hidden');
+    loadingView.classList.add('hidden');
+    errorEl.classList.add('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal() {
+    if (!modal) return;
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    document.body.style.overflow = '';
+  }
+  function showError(msg: string) {
+    errorEl.textContent = msg;
+    errorEl.classList.remove('hidden');
+    loginView.classList.remove('hidden');
+    loadingView.classList.add('hidden');
+  }
+
+  authLinks.forEach((link) => {
+    link.addEventListener('click', (e) => {
+      // Jika Supabase belum dikonfigurasi, biarkan link menuju /dashboard
+      // agar staf melihat pesan pengaturan di sana.
+      if (!isSupabaseConfigured) return;
+      e.preventDefault();
+      openModal();
+      setOpen(false);
+    });
+  });
+  closeBtn?.addEventListener('click', closeModal);
+  modal?.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeModal();
+  });
+
+  // ---- Sinkronkan tombol header sesuai status login & keanggotaan admin ----
+  async function isAdmin(user: { email?: string } | null): Promise<boolean> {
+    if (!supabase || !user) return false;
+    try {
+      if (!user.email) return false;
+      const { data, error } = await supabase.rpc('is_admin');
+      if (!error) return data === true;
+    } catch {
+      /* lanjut ke pengecekan email */
+    }
+    try {
+      const email = (user.email || '').toLowerCase();
+      const { data: rows } = await supabase
+        .from('site_admins')
+        .select('email')
+        .eq('email', email);
+      return Array.isArray(rows) && rows.length > 0;
+    } catch {
+      return false;
+    }
+  }
+
+  function applyAuthState(user: { email?: string } | null, admin: boolean) {
+    const label = document.getElementById('header-auth-label');
+    const link = document.getElementById('header-auth-link');
+    // Hanya tampilkan "Dashboard" bila benar-benar admin.
+    if (user && admin) {
+      if (label) label.textContent = 'Dashboard';
+      if (link) link.setAttribute('aria-label', 'Buka dashboard admin');
+    } else {
+      if (label) label.textContent = 'Login';
+      if (link) link.setAttribute('aria-label', 'Login staff');
+    }
+  }
+
+  // ---- Login dengan Google ----
+  googleBtn?.addEventListener('click', async () => {
+    if (!supabase) {
+      showError('Supabase belum dikonfigurasi. Isi .env lalu muat ulang halaman.');
+      return;
+    }
+    try {
+      loginView.classList.add('hidden');
+      loadingView.classList.remove('hidden');
+      errorEl.classList.add('hidden');
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo: authRedirectTo() },
+      });
+      if (error) throw error;
+      // OAuth akan mengalihkan browser ke Google; modal tetap terbuka.
+    } catch (err) {
+      loadingView.classList.add('hidden');
+      loginView.classList.remove('hidden');
+      showError(describeAuthError(err));
+      console.error('Google sign-in error:', err);
+    }
+  });
+
+  // Cek sesi di awal & ikuti perubahan status login.
+  (async () => {
+    if (!supabase) return;
+    const { data } = await supabase.auth.getSession();
+    const user = data.session?.user ?? null;
+    applyAuthState(user, await isAdmin(user));
+    supabase.auth.onAuthStateChange(async (_event, session) => {
+      const u = session?.user ?? null;
+      applyAuthState(u, await isAdmin(u));
+    });
+  })();
 </script>

@@ -4,8 +4,15 @@ Landing page *lead generation* untuk jasa pemasangan, perawatan, dan perbaikan
 AC di **Bandung Raya** yang dibangun dengan **Astro** + **Tailwind CSS** sesuai
 rekomendasi *tech stack* pada `PRD_Nadeera_Teknik.md`.
 
-> ✅ Proyek menghasilkan *output statis* murni (`dist/`), sehingga performa cepat
-> dan deployment sangat sederhana — **tanpa adapter/SSR**.
+> 🔐 **Login staff + dashboard konten (Supabase).** Header memakai tombol
+> **Login** → popup **Sign in with Google** (khusus untuk staff Nadeera Teknik).
+> Staff yang sudah login membuka **`/dashboard`** untuk mengelola (**CRUD**)
+> seluruh konten website dari **hero sampai footer**. Konten disimpan di
+> Supabase dan situs publik di-render ulang otomatis dari database, sehingga
+> proyek ini berjalan sebagai **Server-Side Rendering (SSR)**.
+
+Panduan lengkap menyambungkan Supabase (OAuth Google, tabel, RLS) ada di
+**[`SETUP_SUPABASE.md`](SETUP_SUPABASE.md)**.
 
 ---
 
@@ -15,11 +22,12 @@ rekomendasi *tech stack* pada `PRD_Nadeera_Teknik.md`.
 - [Struktur folder](#-struktur-folder)
 - [Perintah](#-perintah)
 - [Konfigurasi penting](#konfigurasi-penting)
-- [Catatan aset & performa](#catatan-aset--performa)
+- [Login staff & dashboard](#-login-staff--dashboard)
+- [Catatan aset & performa](#-catatan-aset--performa)
 - [Node version](#node-version)
 - [Git & version control](#git--version-control)
 - [Pencacah pengunjung (footer)](#-pencacah-pengunjung-footer)
-- [Deploy ke Vercel](#deploy-ke-vercel)
+- [Deploy ke hosting](#deploy-ke-hosting)
 
 ---
 
@@ -27,10 +35,11 @@ rekomendasi *tech stack* pada `PRD_Nadeera_Teknik.md`.
 
 | Bagian | Pilihan |
 | :--- | :--- |
-| Framework | [Astro 5](https://astro.build) (static/Zero-JS di browser) |
+| Framework | [Astro 5](https://astro.build) (SSR via `@astrojs/node`) |
 | Styling | [Tailwind CSS 4](https://tailwindcss.com) via `@tailwindcss/vite` |
+| Auth & DB | [Supabase](https://supabase.com) (Google OAuth + tabel `site_content`) |
 | Font | Plus Jakarta Sans (Google Fonts) |
-| Bahasa | TypeScript (di sandi `src/site.ts`) |
+| Bahasa | TypeScript (`src/site.ts`, `src/lib/*`) |
 
 ### Halaman & fitur (sesuai PRD)
 - **Hero** — headline "Solusi AC Dingin & Sehat di Bandung" + CTA WhatsApp.
@@ -39,6 +48,8 @@ rekomendasi *tech stack* pada `PRD_Nadeera_Teknik.md`.
 - **Harga & Transparansi** — tabel estimasi harga dasar.
 - **Testimoni & Portofolio** — social proof + galeri pengerjaan.
 - **Floating WhatsApp Button** — tombol melayang di kanan bawah.
+- **Login staff (Google)** — popup di header, hanya akun yang diizinkan.
+- **Dashboard `/dashboard`** — CRUD konten hero → footer via Supabase.
 
 ---
 
@@ -46,21 +57,29 @@ rekomendasi *tech stack* pada `PRD_Nadeera_Teknik.md`.
 
 ```
 nadeera-teknik/
-├─ astro.config.mjs          # konfigurasi Astro (+ plugin Tailwind vite)
+├─ astro.config.mjs          # konfigurasi Astro (+ plugin Tailwind, adapter Node SSR)
 ├─ package.json              # skrip, dependencies, engines (Node)
 ├─ tsconfig.json
 ├─ .nvmrc                    # versi Node yang disarankan
-├─ .gitignore                # mengecualikan node_modules, dist, .astro, .vercel
+├─ .gitignore                # mengecualikan node_modules, dist, .astro, .env, .vercel
+├─ .env.example              # contoh variabel lingkungan Supabase
+├─ SETUP_SUPABASE.md         # ⭐ panduan setup Supabase (login + konten)
 ├─ public/                   # aset statis (langsung disajikan di root)
 │  ├─ logo.png               # logo (disalin dari logo.png di root)
 │  ├─ favicon.svg
 │  └─ images/                # ikon layanan & ilustrasi galeri (.svg)
 └─ src/
-   ├─ site.ts                # ⭐ semua data + kontak (satu sumber kebenaran)
+   ├─ site.ts                # kontak & helper (nomor WhatsApp, waLink, formatRupiah)
+   ├─ lib/
+   │  ├─ supabase.ts         # klien Supabase (URL/key dari env)
+   │  ├─ default-content.ts  # ⭐ model & konten default seluruh seksi
+   │  └─ site-content.ts     # ambil + gabung konten dari Supabase
    ├─ styles/global.css      # Tailwind + design tokens warna brand
    ├─ layouts/BaseLayout.astro   # head HTML, meta SEO, font, JSON-LD
    ├─ components/            # Header, Hero, Services, Pricing, Footer, dll.
-   └─ pages/index.astro      # halaman tunggal (landing page)
+   └─ pages/
+      ├─ index.astro         # landing page (render konten dari Supabase)
+      └─ dashboard.astro     # dashboard admin (login + CRUD konten)
 ```
 
 ---
@@ -71,21 +90,39 @@ nadeera-teknik/
 | :--- | :--- |
 | Instal dependency | `npm install` |
 | Server pengembangan | `npm run dev` |
-| Build produksi (statis) | `npm run build` → hasil di `dist/` |
+| Build produksi (SSR) | `npm run build` → hasil di `dist/` |
+| Jalankan hasil build | `npm start` (`node ./dist/server/entry.mjs`) |
 | Pratinjau build lokal | `npm run preview` |
 
 ---
 
 ## ⚙️ Konfigurasi penting
 
-Semua data terpusat di **`src/site.ts`**:
-
-- **Kontak** (`SITE`): judul, deskripsi, nama, email, dan **nomor WhatsApp**.
-- **Layanan** (`SERVICES`), **Area** (`AREAS`), **Testimoni** (`TESTIMONIALS`), dan helper `waLink()` untuk tombol WhatsApp.
+- **Kontak & WhatsApp** di **`src/site.ts`** (`SITE`, `waLink()`, `formatRupiah`).
+- **Konten website (hero → footer)** sekarang berada di **`src/lib/default-content.ts`**
+  sebagai nilai default, dan dapat diedit runtime dari dashboard via Supabase.
 
 > ⚠️ **Nomor WhatsApp** dikonfigurasi di `SITE.phoneIntl` & `SITE.phoneDisplay`
 > (sudah diisi nomor resmi). Ubahlah di `src/site.ts` bila nomor berubah — semua
 > tombol "Pesan Teknisi" otomatis mengikuti.
+
+---
+
+## 🔐 Login staff & dashboard
+
+Fitur untuk staf internal mengelola konten website secara **CRUD (hero → footer)**.
+
+- **Tombol Login** ada di header (desktop & menu mobile). Saat diklik muncul
+  **popup** berisi tombol **Sign in with Google** dan kalimat
+  *"khusus untuk staff nadeera teknik"*.
+- Autentikasi memakai **Supabase Auth** (Google OAuth). Hanya akun yang
+  di-*invite*/domain yang diizinkan yang bisa login (lihat `SETUP_SUPABASE.md`).
+- Setelah login, staff membuka **`/dashboard`** untuk mengedit tiap seksi
+  (Navigasi, Hero, Layanan, Area, Harga, Testimoni, Portofolio, CTA, Footer),
+  menambah/menghapus item, lalu **Simpan** ke tabel `site_content`.
+- Halaman publik (**`/`**) membaca konten dari Supabase saat diminta (SSR),
+  jadi perubahan langsung tampil tanpa build ulang. Tanpa Supabase dikonfigurasi,
+  situs tetap tampil memakai **konten default** di `src/lib/default-content.ts`.
 
 ---
 
@@ -95,12 +132,12 @@ Semua data terpusat di **`src/site.ts`**:
   header, footer, favicon, dan *structured data* (JSON-LD `HVACBusiness`).
 - Gambar galeri/ikon saat ini berupa **ilustrasi SVG ringan** sebagai pengganti
   foto. Untuk memenuhi target performa PRD, ganti dengan **foto asli teknisi
-  berformat WebP** di `public/images/` dan perbarui array `gallery` di
-  `src/components/Testimonials.astro`.
+  berformat WebP** di `public/images/` dan perbarui path pada seksi Portofolio
+  (konten bisa diedit dari dashboard).
 - Semua `<img>` sudah memakai `loading="lazy"` (kecuali logo utama yang
   `fetchpriority="high"`).
-- Skrip menu mobile & JSON-LD di-*inline* oleh Astro → hasil *output* statis
-  hampir tanpa JavaScript, bagus untuk skor Lighthouse.
+- JavaScript hanya dipakai untuk popup login, menu mobile, dan dashboard
+  (halaman publik tetap ringan).
 
 ---
 
@@ -129,56 +166,57 @@ Repo sudah di-*initialize* dengan dua commit awal. **`.gitignore`** mengecualika
 
 ## 📊 Pencacah Pengunjung (Footer)
 
-Footer menampilkan **Total pengunjung** dan **Kunjungan hari ini**, dihitung oleh
-komponen `src/components/VisitorCounter.astro`:
+Footer menampilkan **Total pengunjung** dan **Kunjungan hari ini**, dihitung
+oleh komponen `src/components/VisitorCounter.astro`:
 
-- **Layanan:** [CountAPI](https://countapi.xyz) — pencacah JSON gratis, persistent
-  di server pihak ketiga (tanpa backend/DB sendiri).
-- **Total** memakai kunci `pengunjung-total`; **harian** memakai kunci per-tanggal
-  (`kunjungan-YYYYMMDD`) sehingga otomatis "reset" setiap hari.
-- Setiap perangkat hanya menghitung +1 per hari (via `localStorage`) untuk
-  meniru angka pengunjung, bukan *reload* berulang.
-- **Fallback otomatis:** jika layanan tidak terjangkau, dipakai angka lokal di
-  `localStorage` — footer tidak pernah tampil kosong/rusak.
-- Untuk mengganti/memakai penyedia lain, ubah konstanta `BASE`/`NS` dan format
-  respons di `src/components/VisitorCounter.astro`.
+- **Implementasi:** berbasis `localStorage` per-perangkat — **tanpa panggilan
+  jaringan eksternal**, sehingga tidak ada request yang gagal di konsol browser
+  (layanan pihak ketiga lama, CountAPI, sudah tidak stabil/tidak dapat
+  di-resolve dan dihapus).
+- **Kunjungan hari ini** otomatis reset setiap tengah malam (berdasarkan
+  tanggal lokal perangkat).
+- Setiap perangkat hanya menambah **+1 per hari** (via penanda
+  `nt_counted-YYYYMMDD`), jadi *reload* berulang tidak menaikkan angka.
+- **Catatan:** angka **total** bersifat per-perangkat (bukan jumlah pengunjung
+  unik global). Bila butuh akurasi lintas-perangkat, sambungkan ke layanan
+  pengganti (mis. tabel Supabase) dengan mengedit
+  `src/components/VisitorCounter.astro`.
 
 ---
 
-## 🚀 Deploy ke Vercel
+## 🚀 Deploy ke hosting (SSR)
 
-Karena proyek **fully static**, Vercel cukup menjalankan `npm run build` lalu
-menyajikan isi folder `dist/` — **tidak perlu adapter**.
+Karena konten diambil dari database saat halaman diminta, proyek kini memakai
+**Server-Side Rendering (SSR)** dengan adapter **`@astrojs/node`**.
 
-### Opsi A — Integrasi Git (GitHub) + dashboard (disarankan)
+### Opsi A — Hosting Node apa pun (VPS, Railway, Render, Fly.io)
 
-1. Push ke GitHub:
+1. Bangun lalu jalankan server Node:
    ```bash
-   git remote add origin <url-repo-github>
-   git push -u origin main
+   npm install
+   npm run build        # hasil di dist/
+   npm start            # node ./dist/server/entry.mjs
    ```
-2. Di dashboard [Vercel](https://vercel.com): **Add New → Project** → import
-   repo tersebut.
-3. Biarkan pengaturan bawaan (dideteksi otomatis):
-   - Install command: `npm install`
-   - Build command: `npm run build`
-   - **Output directory: `dist`**
-4. Klik **Deploy**.
+2. Atur variabel lingkungan `PUBLIC_SUPABASE_URL` dan
+   `PUBLIC_SUPABASE_ANON_KEY` di platform hosting Anda.
 
-### Opsi B — Vercel CLI (tanpa Git/GitHub)
+### Opsi B — Vercel / Netlify
 
-```bash
-npm i -g vercel
-vercel            # setup pertama: pilih scope → pilih "Other" → output dir = dist
-vercel --prod     # deploy produksi
-```
+Proyek ini memakai adapter Node secara *default*. Untuk platform serupa, pasang
+adapter resmi Astro dan sesuaikan `astro.config.mjs`:
+
+- Vercel: `npm i @astrojs/vercel` lalu `import vercel from '@astrojs/vercel/serverless'`
+  dan `adapter: vercel()`.
+- Netlify: `npm i @astrojs/netlify` lalu `adapter: netlify()`.
+
+Lihat dokumentasi adapter di [docs.astro.build](https://docs.astro.build/en/guides/integrations-guide/vercel).
 
 ### Pasca-deploy
 
-- **Custom domain**: Project → **Settings → Domains** → tambahkan
-  `nadeerateknik.com`, lalu set record DNS sesuai petunjuk Vercel.
-- Nilai `site` di `astro.config.mjs` bersifat opsional (berguna untuk sitemap/SEO)
-  dan tidak menghalangi deploy.
+- **Custom domain**: atur DNS (mis. `nadeerateknik.com`) sesuai petunjuk penyedia.
+- Jangan lupa isi **variabel lingkungan Supabase** di platform hosting.
+- Pastikan **URL dashboard** (`https://domain/dashboard`) sudah ditambahkan ke
+  **Authorized redirect URIs** pada Google OAuth (lihat `SETUP_SUPABASE.md`).
 
 ---
 

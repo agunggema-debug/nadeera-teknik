@@ -1,23 +1,30 @@
 ---
-import { AREAS, waLink } from '../site';
+import { waLink } from '../site';
+import { DEFAULT_CONTENT, type SiteContent } from '../lib/default-content';
+
+interface Props {
+  /** Seksi area — opsional, fallback ke DEFAULT_CONTENT.areas */
+  content?: SiteContent['areas'];
+}
+const c = Astro.props.content ?? DEFAULT_CONTENT.areas;
+const areas = c.items;
 ---
 
 <section id="area" class="bg-electric-50 py-16 sm:py-24">
   <div class="mx-auto max-w-6xl px-4 sm:px-6">
     <div class="mx-auto max-w-2xl text-center">
-      <p class="text-sm font-bold uppercase tracking-widest text-electric-500">Area Layanan</p>
+      <p class="text-sm font-bold uppercase tracking-widest text-electric-500">{c.eyebrow}</p>
       <h2 class="mt-3 text-3xl font-extrabold tracking-tight text-cool-900 sm:text-4xl">
-        Menjangkau Bandung Raya &amp; sekitarnya
+        {c.title}
       </h2>
       <p class="mt-4 text-lg leading-relaxed text-cool-700">
-        Teknisi kami siap meluncur ke lokasi Anda. Jika area belum tertera,
-        tanyakan langsung — kami tetap bisa membantu selama terjangkau.
+        {c.subtitle}
       </p>
     </div>
 
     <ul class="mt-10 flex flex-wrap justify-center gap-3">
       {
-        AREAS.map((area) => (
+        areas.map((area) => (
           <li>
             <a
               href={waLink(`Halo Nadeera Teknik, saya di ${area}. Apakah area ini terjangkau?`)}
@@ -34,9 +41,9 @@ import { AREAS, waLink } from '../site';
     </ul>
 
     <p class="mt-8 text-center text-sm text-cool-600">
-      Di luar daftar di atas?{' '}
+      {c.ctaNote}{' '}
       <a href={waLink('Halo Nadeera Teknik, apakah area saya (sebutkan alamat) terjangkau?')} target="_blank" rel="noopener" class="font-bold text-electric-600 underline underline-offset-2 hover:text-electric-700">
-        Cek jangkauan via WhatsApp
+        {c.ctaLink}
       </a>
     </p>
   </div>

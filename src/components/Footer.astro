@@ -3,14 +3,14 @@ import Logo from './Logo.astro';
 import WhatsAppIcon from './icons/WhatsAppIcon.astro';
 import VisitorCounter from './VisitorCounter.astro';
 import { SITE, waLink } from '../site';
+import { DEFAULT_CONTENT, type SiteContent } from '../lib/default-content';
 
-const quickLinks = [
-  { href: '#layanan', label: 'Layanan Kami' },
-  { href: '#area', label: 'Area Layanan' },
-  { href: '#harga', label: 'Harga' },
-  { href: '#portofolio', label: 'Portofolio' },
-  { href: '#testimoni', label: 'Testimoni' },
-];
+interface Props {
+  /** Seksi footer — opsional, fallback ke DEFAULT_CONTENT.footer */
+  content?: SiteContent['footer'];
+}
+const c = Astro.props.content ?? DEFAULT_CONTENT.footer;
+const quickLinks = c.quickLinks;
 ---
 
 <footer class="bg-electric-950 text-white">
@@ -18,14 +18,13 @@ const quickLinks = [
     <div>
       <Logo theme="light" size={40} />
       <p class="mt-4 max-w-sm text-sm leading-relaxed text-electric-100/80">
-        Penyedia jasa pemasangan, perawatan, dan perbaikan AC berbiaya transparan
-        di Bandung dan sekitarnya. Dipercaya untuk hunian maupun bisnis.
+        {c.about}
       </p>
-      <p class="mt-4 text-sm text-electric-100/60">Jam operasional: setiap hari, 08.00–20.00 WIB</p>
+      <p class="mt-4 text-sm text-electric-100/60">{c.hours}</p>
     </div>
 
     <nav aria-label="Tautan cepat">
-      <h3 class="text-sm font-bold uppercase tracking-widest text-electric-100/60">Tautan</h3>
+      <h3 class="text-sm font-bold uppercase tracking-widest text-electric-100/60">{c.quickLinksTitle}</h3>
       <ul class="mt-4 space-y-2.5">
         {
           quickLinks.map((l) => (
@@ -38,7 +37,7 @@ const quickLinks = [
     </nav>
 
     <div>
-      <h3 class="text-sm font-bold uppercase tracking-widest text-electric-100/60">Hubungi Kami</h3>
+      <h3 class="text-sm font-bold uppercase tracking-widest text-electric-100/60">{c.contactTitle}</h3>
       <ul class="mt-4 space-y-3 text-sm text-electric-100/90">
         <li>
           <a href={waLink('Halo Nadeera Teknik!')} target="_blank" rel="noopener" class="inline-flex items-center gap-2.5 transition hover:text-white">
@@ -47,11 +46,11 @@ const quickLinks = [
           </a>
         </li>
         <li>
-          <a href={`mailto:${SITE.email}`} class="inline-flex items-center gap-2.5 transition hover:text-white">
+          <a href={`mailto:${c.email}`} class="inline-flex items-center gap-2.5 transition hover:text-white">
             <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-white/10">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
             </span>
-            {SITE.email}
+            {c.email}
           </a>
         </li>
       </ul>
@@ -60,9 +59,9 @@ const quickLinks = [
 
   <div class="border-t border-white/10">
     <div class="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 px-4 py-6 text-xs text-electric-100/60 sm:px-6 lg:flex-row">
-      <p>© {new Date().getFullYear()} Nadeera Teknik. Seluruh hak cipta dilindungi.</p>
+      <p>© {new Date().getFullYear()} {c.rights}</p>
       <VisitorCounter />
-      <p class="text-center lg:text-right">Jasa Service AC Bandung • &amp; Sekitarnya</p>
+      <p class="text-center lg:text-right">{c.tagline}</p>
     </div>
   </div>
 </footer>
