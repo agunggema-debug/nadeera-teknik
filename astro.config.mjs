@@ -9,7 +9,7 @@ import vercel from "@astrojs/vercel/serverless";
 // dibaca langsung dari Supabase saat halaman diminta, sehingga perubahan
 // dari dashboard admin langsung tampil di situs publik tanpa build ulang.
 export default defineConfig({
-  site: "https://nadeerateknik.com",
+  site: "https://nadeera-teknik.vercel.app/",
   output: "server",
   adapter: vercel(),
   vite: {
