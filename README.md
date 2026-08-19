@@ -115,11 +115,16 @@ Fitur untuk staf internal mengelola konten website secara **CRUD (hero → foote
 - **Tombol Login** ada di header (desktop & menu mobile). Saat diklik muncul
   **popup** berisi tombol **Sign in with Google** dan kalimat
   *"khusus untuk staff nadeera teknik"*.
-- Autentikasi memakai **Supabase Auth** (Google OAuth). Hanya akun yang
-  di-*invite*/domain yang diizinkan yang bisa login (lihat `SETUP_SUPABASE.md`).
+- Autentikasi memakai **Supabase Auth** (Google OAuth). Akses dibatasi **dua
+  lapis**: hanya akun dari domain yang diizinkan (pengaturan provider Google)
+  **dan** yang email-nya terdaftar di tabel **`site_admins`** yang bisa membuka
+  dashboard (lihat `SETUP_SUPABASE.md`).
 - Setelah login, staff membuka **`/dashboard`** untuk mengedit tiap seksi
   (Navigasi, Hero, Layanan, Area, Harga, Testimoni, Portofolio, CTA, Footer),
   menambah/menghapus item, lalu **Simpan** ke tabel `site_content`.
+- **Keamanan:** pengecekan admin dilakukan di UI **dan** di database (Row Level
+  Security). Akun Google yang benar tapi **bukan admin** → secara otomatis
+  di-*logout* dan diarahkan kembali ke halaman website.
 - Halaman publik (**`/`**) membaca konten dari Supabase saat diminta (SSR),
   jadi perubahan langsung tampil tanpa build ulang. Tanpa Supabase dikonfigurasi,
   situs tetap tampil memakai **konten default** di `src/lib/default-content.ts`.
