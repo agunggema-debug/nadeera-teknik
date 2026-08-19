@@ -119,71 +119,128 @@ import { SITE } from '../site';
 
 
     <!-- ============ Dashboard editor ============ -->
-    <div id="dash-editor" class="hidden min-h-screen bg-gradient-to-b from-cool-50 via-white to-cool-50">
-      <!-- Bar atas -->
-      <header class="sticky top-0 z-30 border-b border-cool-100 bg-white/85 backdrop-blur-md">
-        <div class="mx-auto flex h-[4.5rem] max-w-6xl items-center justify-between gap-3 px-4 sm:px-6">
-          <!-- Brand + kembali ke website -->
-          <div class="flex items-center gap-3">
-            <a
-              href="/"
-              class="group flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-electric-600 to-electric-900 text-white shadow-md shadow-electric-900/10 transition hover:shadow-lg hover:shadow-electric-900/25"
-              aria-label="Lihat website"
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5 transition group-hover:-translate-y-px" aria-hidden="true">
-                <path d="M12 2v1.5m0 17V22M4.2 4.2l1.1 1.1m13.4 13.4 1.1 1.1M2 12h1.5m17 0H22M4.2 19.8l1.1-1.1m13.4-13.4 1.1-1.1" opacity=".4" />
-                <path d="M8.5 12h7M12 8.5v7" />
-              </svg>
-            </a>
-            <div>
-              <h1 class="text-lg font-extrabold leading-tight tracking-tight text-cool-900">Dashboard Konten</h1>
-              <p class="text-xs font-medium text-cool-600">
-                Kelola konten <span class="font-bold text-electric-700">Nadeera Teknik</span>
-              </p>
-            </div>
-          </div>
+    <div id="dash-editor" class="hidden bg-cool-50">
+      <!-- Overlay (mobile) -->
+      <div id="sb-overlay" class="fixed inset-0 z-40 hidden bg-cool-900/40 backdrop-blur-sm lg:hidden"></div>
 
-          <!-- Pengguna + keluar -->
-          <div class="flex items-center gap-2 sm:gap-3">
-            <span id="dash-user" class="hidden items-center gap-2 rounded-full border border-cool-100 bg-cool-50 py-1 pl-1 pr-3 text-xs font-semibold text-cool-700 sm:flex">
-              <span id="dash-avatar" class="flex h-7 w-7 items-center justify-center rounded-full bg-electric-600 text-[11px] font-extrabold text-white shadow-sm"></span>
-              <span id="dash-user-label" class="max-w-[10rem] truncate"></span>
-            </span>
-            <button
-              id="dash-logout"
-              type="button"
-              class="inline-flex items-center gap-2 rounded-full border border-red-200 bg-white px-4 py-2.5 text-sm font-semibold text-red-600 shadow-sm transition hover:border-red-300 hover:bg-red-50 active:scale-[0.98]"
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4" aria-hidden="true">
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" />
-              </svg>
-              Keluar
-            </button>
-          </div>
-        </div>
-      </header>
-
-      <main class="mx-auto max-w-4xl px-4 py-8 pb-16 sm:px-6">
-        <div class="flex items-start gap-3 rounded-2xl border border-electric-100 bg-gradient-to-r from-electric-50 to-accent-50 px-5 py-4 text-sm leading-relaxed text-electric-900 shadow-sm">
-          <span class="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-electric-600 text-white shadow-sm">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4.5 w-4.5" aria-hidden="true">
-              <circle cx="12" cy="12" r="10" />
-              <path d="M12 16v-4M12 8h.01" />
+      <!-- SIDEBAR -->
+      <aside
+        id="dash-sidebar"
+        class="fixed inset-y-0 left-0 z-50 flex w-72 flex-col bg-gradient-to-b from-electric-950 via-electric-900 to-electric-950 text-cool-100 shadow-2xl -translate-x-full transition-transform duration-300 lg:translate-x-0"
+      >
+        <!-- Logo brand -->
+        <div class="flex items-center gap-3 px-5 py-5">
+          <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-electric-400 to-accent-500 text-white shadow-lg shadow-black/20">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6">
+              <path d="M12 2v1.5m0 17V22M4.2 4.2l1.1 1.1m13.4 13.4 1.1 1.1M2 12h1.5m17 0H22M4.2 19.8l1.1-1.1m13.4-13.4 1.1-1.1" opacity=".4" />
+              <path d="M8.5 12h7M12 8.5v7" />
             </svg>
           </span>
-          <p>
-            <strong class="font-bold">Petunjuk:</strong> Edit konten setiap seksi lalu klik
-            <strong class="font-bold">Simpan</strong>. Perubahan langsung tampil di website publik.
-            Untuk daftar item (mis. layanan, harga, testimoni), gunakan tombol
-            <em class="not-italic font-semibold">Tambah</em> / <em class="not-italic font-semibold">Hapus</em>.
-          </p>
+          <div class="min-w-0">
+            <p class="text-lg font-extrabold leading-tight tracking-tight text-white">Nadeera Teknik</p>
+            <p class="text-[11px] font-semibold uppercase tracking-widest text-electric-300">Dashboard Konten</p>
+          </div>
         </div>
 
-        <!-- Daftar seksi -->
-        <div id="dash-sections" class="mt-6 space-y-5"></div>
+        <!-- Menu -->
+        <div class="mt-2 flex-1 overflow-y-auto px-3 pb-4">
+          <p class="px-3 pb-2 text-[10px] font-bold uppercase tracking-widest text-electric-300">Menu Konten</p>
+          <div id="dash-nav" class="space-y-1"></div>
+        </div>
 
-        <div id="dash-toast" class="pointer-events-none fixed bottom-6 left-1/2 z-40 -translate-x-1/2 rounded-full bg-cool-900 px-5 py-2.5 text-sm font-semibold text-white opacity-0 shadow-lg transition-opacity"></div>
-      </main>
+          <!-- Profil + keluar -->
+        <div class="border-t border-white/10 p-4">
+          <div class="flex items-center gap-3 rounded-2xl bg-white/5 p-3">
+            <span id="dash-avatar-side" class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-accent-400 to-accent-600 text-sm font-extrabold text-white shadow"></span>
+            <div class="min-w-0 flex-1">
+              <p id="dash-user-side" class="truncate text-sm font-semibold text-white"></p>
+              <p class="text-[11px] font-medium text-electric-300">Administrator</p>
+            </div>
+          </div>
+          <button
+            id="dash-logout-side"
+            type="button"
+            class="group mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-sm font-semibold text-cool-100 transition hover:border-red-400/40 hover:bg-red-500/20 hover:text-white"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" /></svg>
+            Keluar
+          </button>
+        </div>
+      </aside>
+
+      <!-- KONTEN UTAMA -->
+      <div class="min-h-screen lg:pl-72">
+        <!-- Topbar -->
+        <header class="sticky top-0 z-30 border-b border-cool-100 bg-white/85 backdrop-blur-md">
+          <div class="flex h-16 items-center justify-between gap-3 px-4 sm:px-6">
+            <div class="flex items-center gap-3">
+              <button id="sb-toggle" type="button" class="flex h-10 w-10 items-center justify-center rounded-xl border border-cool-100 text-cool-700 transition hover:bg-cool-50 lg:hidden" aria-label="Buka menu">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="h-5 w-5"><path d="M4 6h16M4 12h16M4 18h16" /></svg>
+              </button>
+              <a href="/" class="flex h-10 w-10 items-center justify-center rounded-xl border border-cool-100 text-cool-700 transition hover:bg-cool-50" aria-label="Lihat website">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M12 19V5M5 12l7-7 7 7" /></svg>
+              </a>
+              <div>
+                <h1 class="text-base font-extrabold leading-tight tracking-tight text-cool-900">Kelola Konten Website</h1>
+                <p class="text-xs font-medium text-cool-600">Edit & simpan konten setiap bagian</p>
+              </div>
+            </div>
+
+            <!-- Profil dropdown -->
+            <div class="relative">
+              <button id="dash-user-toggle" type="button" class="flex items-center gap-2.5 rounded-full border border-cool-100 bg-white py-1 pl-1 pr-3 shadow-sm transition hover:bg-cool-50">
+                <span id="dash-avatar" class="flex h-8 w-8 items-center justify-center rounded-full bg-electric-600 text-xs font-extrabold text-white"></span>
+                <span class="hidden text-sm font-semibold text-cool-700 sm:block">Profil</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 text-cool-600"><path d="M6 9l6 6 6-6" /></svg>
+              </button>
+              <div id="dash-profile-menu" class="absolute right-0 mt-2 hidden w-60 overflow-hidden rounded-2xl border border-cool-100 bg-white shadow-xl">
+                <div class="border-b border-cool-100 bg-cool-50 px-4 py-3">
+                  <p id="dash-user-label" class="truncate text-sm font-bold text-cool-900"></p>
+                  <p class="text-xs text-cool-600">Login Google</p>
+                </div>
+                <div class="px-2 py-1.5">
+                  <a href="/" class="flex items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-cool-600 transition hover:bg-cool-50 hover:text-electric-600">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><path d="M12 19V5M5 12l7-7 7 7" /></svg>
+                    Lihat Website
+                  </a>
+                </div>
+                <div class="border-t border-cool-100 p-2">
+                  <button id="dash-logout" type="button" class="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-semibold text-red-600 transition hover:bg-red-50">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" /></svg>
+                    Keluar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <!-- Main -->
+        <main class="mx-auto max-w-6xl px-4 py-6 pb-20 sm:px-6 lg:py-8">
+          <!-- Statistik ringkas -->
+          <div id="dash-stats" class="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4"></div>
+        <!-- Petunjuk -->
+          <div class="mt-6 flex items-start gap-3 rounded-2xl border border-electric-100 bg-gradient-to-r from-electric-50 to-accent-50 px-5 py-4 text-sm leading-relaxed text-electric-900 shadow-sm">
+            <span class="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-electric-600 text-white shadow-sm">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4.5 w-4.5" aria-hidden="true">
+                <circle cx="12" cy="12" r="10" />
+                <path d="M12 16v-4M12 8h.01" />
+              </svg>
+            </span>
+            <p>
+              <strong class="font-bold">Petunjuk:</strong> Edit konten pada setiap bagian lalu klik
+              <strong class="font-bold">Simpan</strong>. Perubahan langsung tampil di website publik.
+              Untuk daftar item (mis. layanan, harga, testimoni), gunakan tombol
+              <em class="not-italic font-semibold">Tambah</em> / <em class="not-italic font-semibold">Hapus</em>.
+            </p>
+          </div>
+
+          <!-- Daftar seksi -->
+          <div id="dash-sections" class="mt-6 space-y-5"></div>
+
+          <div id="dash-toast" class="pointer-events-none fixed bottom-6 left-1/2 z-[60] -translate-x-1/2 rounded-full bg-cool-900 px-5 py-2.5 text-sm font-semibold text-white opacity-0 shadow-lg transition-opacity"></div>
+        </main>
+      </div>
     </div>
 
 
@@ -575,6 +632,11 @@ import { SITE } from '../site';
           }
         });
 
+        // Daftarkan kartu agar bisa di-scroll lewat menu sidebar.
+        sectionCards.set(spec.key, card);
+        card.id = 'sec-' + spec.key;
+        card.classList.add('scroll-mt-20');
+
         return card;
       }
 
@@ -604,9 +666,125 @@ import { SITE } from '../site';
       function renderAll() {
         const root = $('dash-sections');
         if (!root) return;
+        sectionCards.clear();
         root.replaceChildren();
         for (let i = 0; i < SECTIONS.length; i++) root.appendChild(renderSection(SECTIONS[i], i + 1));
+        buildNav();
+        renderStats();
       }
+
+      // ---------- Sidebar: daftar kartu & ikon menu ----------
+      const sectionCards = new Map<string, HTMLElement>();
+
+      const SECTION_ICONS: Record<string, string> = {
+        navigation:
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M3 6h18M3 12h18M3 18h18"/></svg>',
+        hero: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/></svg>',
+        services:
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94z"/></svg>',
+        areas: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>',
+        pricing:
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>',
+        testimonials:
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
+        portfolio:
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>',
+        cta: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M3 11v3a1 1 0 0 0 1 1h2l3 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M18 15a3 3 0 0 0 0-6"/></svg>',
+        footer:
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>',
+      };
+
+      function buildNav() {
+        const nav = $('dash-nav');
+        if (!nav) return;
+        nav.replaceChildren();
+        SECTIONS.forEach((spec, i) => {
+          const row = el('button', {
+            type: 'button',
+            className:
+              'group flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-left text-sm font-medium text-electric-200/90 transition hover:bg-white/10 hover:text-white',
+          });
+          const ic = document.createElement('span');
+          ic.className = 'flex h-6 w-6 shrink-0 items-center justify-center';
+          ic.innerHTML = SECTION_ICONS[spec.key] || SECTION_ICONS.navigation;
+          const num = el('span', {
+            className: 'ml-auto rounded-md bg-white/10 px-1.5 py-0.5 text-[10px] font-bold text-electric-200',
+          });
+          num.textContent = String(i + 1).padStart(2, '0');
+          row.appendChild(ic);
+          row.appendChild(document.createTextNode(spec.title));
+          row.appendChild(num);
+          row.addEventListener('click', () => {
+            const card = sectionCards.get(spec.key);
+            if (card) {
+              const body = card.querySelector(':scope > div') as HTMLElement | null;
+              if (body && body.classList.contains('hidden')) {
+                const head = card.firstElementChild as HTMLElement | null;
+                head?.click();
+              }
+              card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+            closeSidebar();
+          });
+          nav.appendChild(row);
+        });
+      }
+
+      // ---------- Statistik ringkas ----------
+      function renderStats() {
+        const root = $('dash-stats');
+        if (!root) return;
+        const count = (key: string): number => {
+          const v = state[key];
+          if (!v) return 0;
+          if (Array.isArray(v)) return v.length;
+          if (Array.isArray(v.items)) return v.items.length;
+          if (Array.isArray(v.rows)) return v.rows.length;
+          return 0;
+        };
+        const cards: { label: string; value: number; color: string; icon: string }[] = [
+          { label: 'Bagian Konten', value: SECTIONS.length, color: 'bg-electric-600', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>' },
+          { label: 'Layanan', value: count('services'), color: 'bg-accent-500', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94z"/></svg>' },
+          { label: 'Estimasi Harga', value: count('pricing'), color: 'bg-electric-800', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>' },
+          { label: 'Testimoni', value: count('testimonials'), color: 'bg-emerald-600', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>' },
+        ];
+        root.replaceChildren();
+        cards.forEach((c) => {
+          const card = el('div', { className: 'flex items-center gap-3 rounded-2xl border border-cool-100 bg-white p-4 shadow-sm sm:p-5' });
+          const tile = el('span', { className: 'flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ' + c.color + ' text-white shadow-sm' });
+          tile.innerHTML = c.icon;
+          const nums = el('div', {});
+          nums.appendChild(el('p', { className: 'text-2xl font-extrabold leading-none tracking-tight text-cool-900' }, [document.createTextNode(String(c.value))]));
+          nums.appendChild(el('p', { className: 'mt-1 text-xs font-medium text-cool-600' }, [document.createTextNode(c.label)]));
+          card.append(tile, nums);
+          root.appendChild(card);
+        });
+      }
+
+      // ---------- Sidebar (mobile) & profil dropdown ----------
+      const sb = $('dash-sidebar');
+      const sbOverlay = $('sb-overlay');
+      function openSidebar() {
+        sb?.classList.remove('-translate-x-full');
+        sbOverlay?.classList.remove('hidden');
+      }
+      function closeSidebar() {
+        sb?.classList.add('-translate-x-full');
+        sbOverlay?.classList.add('hidden');
+      }
+      $('sb-toggle')?.addEventListener('click', () => {
+        if (sb?.classList.contains('-translate-x-full')) openSidebar();
+        else closeSidebar();
+      });
+      sbOverlay?.addEventListener('click', closeSidebar);
+
+      const profileToggle = $('dash-user-toggle');
+      const profileMenu = $('dash-profile-menu');
+      profileToggle?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        profileMenu?.classList.toggle('hidden');
+      });
+      document.addEventListener('click', () => profileMenu?.classList.add('hidden'));
 
       // ---------- Tampilan ----------
       function setView(name: string) {
@@ -647,11 +825,13 @@ import { SITE } from '../site';
         }
       });
 
-      $('dash-logout')?.addEventListener('click', async () => {
+      async function handleLogout() {
         if (supabase) await supabase.auth.signOut();
         // Setelah keluar, arahkan kembali ke halaman website utama.
         window.location.replace('/');
-      });
+      }
+      $('dash-logout')?.addEventListener('click', handleLogout);
+      $('dash-logout-side')?.addEventListener('click', handleLogout);
 
       // ---------- Inisialisasi ----------
       /**
@@ -705,16 +885,17 @@ import { SITE } from '../site';
             return;
           }
 
-          const who = $('dash-user');
           const email = session.user.email || session.user.id || '';
-          if (who) {
-            who.classList.remove('hidden');
-            who.classList.add('flex');
-            const label = $('dash-user-label');
-            if (label) label.textContent = email;
-            const av = $('dash-avatar');
-            if (av) av.textContent = (email.charAt(0) || '?').toUpperCase();
-          }
+          const initial = (email.charAt(0) || '?').toUpperCase();
+
+          const label = $('dash-user-label');
+          if (label) label.textContent = email;
+          const av = $('dash-avatar');
+          if (av) av.textContent = initial;
+          const avSide = $('dash-avatar-side');
+          if (avSide) avSide.textContent = initial;
+          const userSide = $('dash-user-side');
+          if (userSide) userSide.textContent = email;
           setView('dash-editor');
 
           const { data: rows, error } = await supabase.from('site_content').select('section, content');
