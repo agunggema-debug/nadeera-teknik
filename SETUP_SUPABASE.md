@@ -57,6 +57,35 @@ PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOi... (anon)
 
 Setelah itu, tombol **Sign in with Google** di header otomatis aktif.
 
+**2.5. Konfigurasi URL (Sangat penting agar redirect login benar)**
+
+Setelah login Google selesai, Supabase mengarahkan browser ke URL tujuan.
+Konfigurasi URL yang salah adalah penyebab paling umum kegagalan login di
+produksi — gejala khasnya browser diarahkan ke `http://localhost:3000` lalu
+muncul `ERR_CONNECTION_REFUSED`, padahal token login sudah berhasil dibuat.
+
+Buka **Authentication → URL Configuration**:
+
+1. **Site URL** → set ke domain produksi (bukan `localhost`):
+   ```
+   https://nadeerateknik.com
+   ```
+2. **Redirect URLs** → daftarkan **semua** domain tempat login dipakai. Sebagai
+   contoh, untuk Vercel + custom domain sekaligus pengembangan lokal:
+   ```
+   https://nadeerateknik.com/**
+   https://nadeerateknik.com/dashboard
+   https://<project>.vercel.app/**
+   http://localhost:4321/**
+   http://localhost:3000/**
+   ```
+3. Klik **Save**. Perubahan berlaku langsung tanpa perlu deploy ulang.
+
+> ⚠️ Jika `redirectTo` yang dikirim kode (yaitu `window.location.origin +
+> '/dashboard'`) **tidak terdaftar** di daftar Redirect URLs, Supabase mengabaikan
+> `redirectTo` tersebut dan memakai **Site URL** sebagai gantinya. Selama Site URL
+> masih mengarah ke `localhost`, browser akan gagal terhubung setelah login.
+
 ---
 
 ## 3. Buat tabel konten
