@@ -226,3 +226,14 @@ Lihat dokumentasi adapter di [docs.astro.build](https://docs.astro.build/en/guid
 ---
 
 © Nadeera Teknik. Seluruh hak cipta dilindungi.
+
+---
+<img width="1813" height="903" alt="image" src="https://github.com/user-attachments/assets/9758fe5a-ac1a-47a3-9999-0b810d0b0506" />
+
+---
+<img width="1568" height="905" alt="image" src="https://github.com/user-attachments/assets/bd7fb12b-92aa-44aa-b9ac-c20faa28ad56" />
+
+---
+<img width="1888" height="905" alt="image" src="https://github.com/user-attachments/assets/509380ec-a911-4c66-8983-3a5b2d848c28" />
+
+
