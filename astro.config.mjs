@@ -1,6 +1,6 @@
 import { defineConfig } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
-import node from "@astrojs/node";
+import vercel from "@astrojs/vercel";
 
 // https://astro.build/config
 //
@@ -10,7 +10,7 @@ import node from "@astrojs/node";
 export default defineConfig({
   site: "https://nadeerateknik.com",
   output: "server",
-  adapter: node({ mode: "standalone" }),
+  adapter: vercel(),
   vite: {
     plugins: [tailwindcss()],
   },

@@ -7,14 +7,14 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "start": "node ./dist/server/entry.mjs",
+    "start": "astro preview",
     "astro": "astro"
   },
   "engines": {
     "node": "24.x"
   },
   "dependencies": {
-    "@astrojs/node": "^9.5.5",
+    "@astrojs/vercel": "^9.0.5",
     "@supabase/supabase-js": "^2.112.3",
     "@tailwindcss/vite": "^4.0.0",
     "astro": "^5.1.0",
