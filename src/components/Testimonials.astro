@@ -14,6 +14,15 @@ const gallery = p.items;
 function stars(n: number) {
   return '★'.repeat(n) + '☆'.repeat(5 - n);
 }
+
+// Kelompokkan gambar portofolio berdasarkan awalan nama file (tanpa ekstensi &
+// tanpa angka urut di akhir), sehingga gambar dengan kategori sama (mis.
+// pemasangan_ac1..7) bisa dinavigasi satu-per-satu di dalam popup.
+function groupKey(src: string): string {
+  const name = src.split('/').pop() ?? src;
+  const base = name.replace(/\.[^.]+$/, ''); // buang ekstensi
+  return base.replace(/[\s_]+/g, '_').replace(/\d+$/, '').toLowerCase();
+}
 ---
 
 <!-- Testimoni -->
@@ -80,6 +89,7 @@ function stars(n: number) {
               data-lightbox-src={g.src}
               data-lightbox-alt={g.alt}
               data-lightbox-label={g.label}
+              data-lightbox-group={groupKey(g.src)}
             >
               <img
                 src={g.src}
@@ -134,6 +144,16 @@ function stars(n: number) {
     class="absolute right-4 top-4 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20"
   >
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="h-6 w-6"><path d="M6 6l12 12M18 6L6 18" /></svg>
+    </button>
+
+  <!-- Navigasi: sebelumnya -->
+  <button
+    id="gallery-lightbox-prev"
+    type="button"
+    aria-label="Gambar sebelumnya"
+    class="absolute left-3 top-1/2 -translate-y-1/2 z-10 hidden sm:flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white opacity-60 transition hover:bg-white/20 hover:opacity-100 sm:left-4"
+  >
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6"><path d="M15 19l-7-7 7-7" /></svg>
   </button>
 
   <div class="flex max-h-full max-w-5xl items-center justify-center">
@@ -145,7 +165,21 @@ function stars(n: number) {
     />
   </div>
 
-  <p id="gallery-lightbox-caption" class="absolute inset-x-0 bottom-6 px-6 text-center text-lg font-bold text-white"></p>
+  <!-- Navigasi: berikutnya -->
+  <button
+    id="gallery-lightbox-next"
+    type="button"
+    aria-label="Gambar berikutnya"
+    class="absolute right-3 top-1/2 -translate-y-1/2 z-10 hidden sm:flex h-12 w-12 items-center justify-center rounded-full bg-white/10 text-white opacity-60 transition hover:bg-white/20 hover:opacity-100 sm:right-4"
+  >
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-6 w-6"><path d="M9 5l7 7-7 7" /></svg>
+  </button>
+
+  <!-- Caption + penghitung -->
+  <div class="absolute inset-x-0 bottom-6 flex items-center justify-between px-6">
+    <p id="gallery-lightbox-caption" class="text-lg font-bold text-white"></p>
+    <p id="gallery-lightbox-counter" class="text-sm font-medium text-white/70" aria-label="Penghitung gambar"></p>
+  </div>
 </div>
 
 <script>
@@ -153,13 +187,48 @@ function stars(n: number) {
   const lightbox = document.getElementById('gallery-lightbox');
   const lightboxImg = document.getElementById('gallery-lightbox-image');
   const lightboxCaption = document.getElementById('gallery-lightbox-caption');
+  const lightboxCounter = document.getElementById('gallery-lightbox-counter');
   const lightboxCloseBtn = document.getElementById('gallery-lightbox-close');
+  const lightboxPrevBtn = document.getElementById('gallery-lightbox-prev');
+  const lightboxNextBtn = document.getElementById('gallery-lightbox-next');
 
-  function openLightbox(src: string, alt: string, label: string) {
-    if (!lightbox || !lightboxImg) return;
-    lightboxImg.src = src;
-    lightboxImg.alt = alt || '';
-    if (lightboxCaption) lightboxCaption.textContent = label || '';
+  // Semua item galeri dapat diklik.
+  const items: HTMLElement[] = Array.from(
+    document.querySelectorAll('[data-lightbox-src]')
+  );
+
+  // Kelompokkan item per kategori (data-lightbox-group) yang dihasilkan
+  // dari awalan nama file, supaya navigasi hanya berlaku pada gambar
+  // dengan kategori sama (mis. pemasagan_ac1..7).
+  const groups = new Map<string, HTMLElement[]>();
+  for (const el of items) {
+    const group = el.getAttribute('data-lightbox-group') || '';
+    if (!groups.has(group)) groups.set(group, []);
+    groups.get(group)!.push(el);
+  }
+
+  let currentGroup: HTMLElement[] = [];
+  let currentIndex = 0;
+
+  function renderItem(index: number) {
+    const el = currentGroup[index];
+    if (!el || !lightboxImg) return;
+    lightboxImg.src = el.getAttribute('data-lightbox-src') || '';
+    lightboxImg.alt = el.getAttribute('data-lightbox-alt') || '';
+    if (lightboxCaption) lightboxCaption.textContent = el.getAttribute('data-lightbox-label') || '';
+    if (lightboxCounter) lightboxCounter.textContent = `${index + 1} / ${currentGroup.length}`;
+    const hasNav = currentGroup.length > 1;
+    if (lightboxPrevBtn) lightboxPrevBtn.classList.toggle('hidden', !hasNav);
+    if (lightboxNextBtn) lightboxNextBtn.classList.toggle('hidden', !hasNav);
+  }
+
+  function openLightbox(el: HTMLElement) {
+    if (!lightbox || !el) return;
+    const group = el.getAttribute('data-lightbox-group') || '';
+    currentGroup = groups.get(group) || [el];
+    currentIndex = currentGroup.indexOf(el);
+    if (currentIndex === -1) currentIndex = 0;
+    renderItem(currentIndex);
     lightbox.classList.remove('hidden');
     lightbox.classList.add('flex');
     document.body.style.overflow = 'hidden';
@@ -172,14 +241,19 @@ function stars(n: number) {
     document.body.style.overflow = '';
   }
 
-  document.querySelectorAll<HTMLElement>('[data-lightbox-src]').forEach((el) => {
-    const open = () => {
-      openLightbox(
-        el.getAttribute('data-lightbox-src') || '',
-        el.getAttribute('data-lightbox-alt') || '',
-        el.getAttribute('data-lightbox-label') || ''
-      );
-    };
+  function showPrev() {
+    if (!currentGroup.length) return;
+    currentIndex = (currentIndex - 1 + currentGroup.length) % currentGroup.length;
+    renderItem(currentIndex);
+  }
+  function showNext() {
+    if (!currentGroup.length) return;
+    currentIndex = (currentIndex + 1) % currentGroup.length;
+    renderItem(currentIndex);
+  }
+
+  items.forEach((el) => {
+    const open = () => openLightbox(el);
     el.addEventListener('click', open);
     el.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
@@ -190,10 +264,19 @@ function stars(n: number) {
   });
 
   lightboxCloseBtn?.addEventListener('click', closeLightbox);
+  lightboxPrevBtn?.addEventListener('click', showPrev);
+  lightboxNextBtn?.addEventListener('click', showNext);
   lightbox?.addEventListener('click', (e) => {
     if (e.target === lightbox) closeLightbox();
   });
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeLightbox();
+    const closed = !lightbox || lightbox.classList.contains('hidden');
+    if (e.key === 'Escape') {
+      if (closed) return;
+      closeLightbox();
+    }
+    if (closed) return;
+    if (e.key === 'ArrowLeft') showPrev();
+    if (e.key === 'ArrowRight') showNext();
   });
 </script>
