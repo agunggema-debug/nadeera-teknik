@@ -72,7 +72,15 @@ function stars(n: number) {
       {
         gallery.map((g) => (
           <figure class="group overflow-hidden rounded-3xl border border-cool-100 shadow-sm">
-            <div class="relative overflow-hidden">
+            <div
+              class="relative overflow-hidden cursor-pointer"
+              role="button"
+              tabindex={0}
+              aria-label={`Buka gambar besar: ${g.label}`}
+              data-lightbox-src={g.src}
+              data-lightbox-alt={g.alt}
+              data-lightbox-label={g.label}
+            >
               <img
                 src={g.src}
                 alt={g.alt}
@@ -85,6 +93,24 @@ function stars(n: number) {
               <figcaption class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-electric-950/80 to-transparent px-5 pb-4 pt-10 text-sm font-bold text-white">
                 {g.label}
               </figcaption>
+              <span
+                class="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-cool-800 opacity-0 shadow-sm transition duration-300 group-hover:opacity-100"
+                aria-hidden="true"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  class="h-4 w-4"
+                >
+                  <circle cx="11" cy="11" r="7" />
+                  <line x1="16.5" y1="16.5" x2="21" y2="21" />
+                  <line x1="11" y1="8" x2="11" y2="14" />
+                  <line x1="8" y1="11" x2="14" y2="11" />
+                </svg>
+              </span>
             </div>
           </figure>
         ))
@@ -92,3 +118,82 @@ function stars(n: number) {
     </div>
   </div>
 </section>
+
+<!-- ====================== Popup Gambar Portofolio (Lightbox) ====================== -->
+<div
+  id="gallery-lightbox"
+  class="fixed inset-0 z-[80] hidden items-center justify-center bg-cool-950/90 p-4"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Tampilan besar gambar portofolio"
+>
+  <button
+    id="gallery-lightbox-close"
+    type="button"
+    aria-label="Tutup gambar"
+    class="absolute right-4 top-4 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20"
+  >
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="h-6 w-6"><path d="M6 6l12 12M18 6L6 18" /></svg>
+  </button>
+
+  <div class="flex max-h-full max-w-5xl items-center justify-center">
+    <img
+      id="gallery-lightbox-image"
+      src=""
+      alt=""
+      class="max-h-[80vh] max-w-full rounded-2xl object-contain shadow-2xl"
+    />
+  </div>
+
+  <p id="gallery-lightbox-caption" class="absolute inset-x-0 bottom-6 px-6 text-center text-lg font-bold text-white"></p>
+</div>
+
+<script>
+  // ---- Popup gambar (lightbox) pada seksi Portofolio ----
+  const lightbox = document.getElementById('gallery-lightbox');
+  const lightboxImg = document.getElementById('gallery-lightbox-image');
+  const lightboxCaption = document.getElementById('gallery-lightbox-caption');
+  const lightboxCloseBtn = document.getElementById('gallery-lightbox-close');
+
+  function openLightbox(src: string, alt: string, label: string) {
+    if (!lightbox || !lightboxImg) return;
+    lightboxImg.src = src;
+    lightboxImg.alt = alt || '';
+    if (lightboxCaption) lightboxCaption.textContent = label || '';
+    lightbox.classList.remove('hidden');
+    lightbox.classList.add('flex');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeLightbox() {
+    if (!lightbox) return;
+    lightbox.classList.add('hidden');
+    lightbox.classList.remove('flex');
+    document.body.style.overflow = '';
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-lightbox-src]').forEach((el) => {
+    const open = () => {
+      openLightbox(
+        el.getAttribute('data-lightbox-src') || '',
+        el.getAttribute('data-lightbox-alt') || '',
+        el.getAttribute('data-lightbox-label') || ''
+      );
+    };
+    el.addEventListener('click', open);
+    el.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        open();
+      }
+    });
+  });
+
+  lightboxCloseBtn?.addEventListener('click', closeLightbox);
+  lightbox?.addEventListener('click', (e) => {
+    if (e.target === lightbox) closeLightbox();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeLightbox();
+  });
+</script>
