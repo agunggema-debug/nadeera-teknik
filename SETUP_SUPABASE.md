@@ -26,7 +26,7 @@ PUBLIC_SUPABASE_URL=https://abcdefgh.supabase.co
 PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOi... (anon)
 ```
 
-> Kunci `anon` itu *public* dan aman ditampilkan di front-end. Keamanan data
+> Kunci `anon` itu _public_ dan aman ditampilkan di front-end. Keamanan data
 > dijaga lewat **Row Level Security (RLS)** (langkah 4).
 
 ---
@@ -38,7 +38,7 @@ PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOi... (anon)
 3. Buat **OAuth 2.0 Client ID** di [Google Cloud Console](https://console.cloud.google.com):
    - **Authorized redirect URI** tambahkan dari Supabase di halaman provider,
      biasanya `https://<ref>.supabase.co/auth/v1/callback`.
-   - Isi *Client ID* dan *Client Secret* ke Supabase.
+   - Isi _Client ID_ dan _Client Secret_ ke Supabase.
 4. **Pembatasan hanya untuk staff (penting):** pada provider Google di Supabase,
    isi **Allowed email domains** dengan domain kantor, misal `nadeerateknik.com`.
    Dengan ini hanya akun Google dengan domain tersebut yang bisa login.
@@ -68,21 +68,19 @@ Buka **Authentication → URL Configuration**:
 
 1. **Site URL** → set ke domain produksi (bukan `localhost`):
    ```
-   https://nadeerateknik.com
+   https://nadeera-teknik.vercel.app/
    ```
 2. **Redirect URLs** → daftarkan **semua** domain tempat login dipakai. Sebagai
    contoh, untuk Vercel + custom domain sekaligus pengembangan lokal:
    ```
-   https://nadeerateknik.com/**
-   https://nadeerateknik.com/dashboard
-   https://<project>.vercel.app/**
+   https://nadeera-teknik.vercel.app/**
    http://localhost:4321/**
    http://localhost:3000/**
    ```
 3. Klik **Save**. Perubahan berlaku langsung tanpa perlu deploy ulang.
 
 > ⚠️ Jika `redirectTo` yang dikirim kode (yaitu `window.location.origin +
-> '/dashboard'`) **tidak terdaftar** di daftar Redirect URLs, Supabase mengabaikan
+'/dashboard'`) **tidak terdaftar** di daftar Redirect URLs, Supabase mengabaikan
 > `redirectTo` tersebut dan memakai **Site URL** sebagai gantinya. Selama Site URL
 > masih mengarah ke `localhost`, browser akan gagal terhubung setelah login.
 
@@ -168,7 +166,7 @@ create policy "only admins can delete site_content"
 ```
 
 > ⚠️ Jika sebelumnya Anda sudah menjalankan policy lama `authenticated can
-> ... site_content`, **hapus** policy tersebut (mis. lewat halaman **Auth →
+... site_content`, **hapus** policy tersebut (mis. lewat halaman **Auth →
 > Policies**) agar non-admin tidak lagi bisa menulis. Policy baru di atas sudah
 > menggantikannya.
 
@@ -188,6 +186,87 @@ insert into public.site_admins (email) values ('nama@nadeerateknik.com');
 
 ---
 
+## 4.5. Pencacah pengunjung (footer) via Supabase
+
+Angka **Total pengunjung** dan **Kunjungan hari ini** di footer kini berasal dari
+tabel `visitor_stats` (bukan `localStorage`). Tabel menyimpan satu baris; angka
+hanya bisa diubah lewat fungsi RPC `record_visit` yang berjalan sebagai
+`security definer`, sehingga pengunjung tak bisa menulis langsung ke tabel.
+
+Jalankan di **SQL Editor**:
+
+```sql
+-- (a) Tabel satu-baris untuk total pengunjung & kunjungan hari ini.
+create table if not exists public.visitor_stats (
+  id         int primary key default 1,
+  total      bigint not null default 0,
+  today      bigint not null default 0,
+  today_date date   not null default current_date,
+  updated_at timestamptz not null default now()
+) with (fillfactor = 100);
+
+-- Kunci selalu satu baris (jangan pernah menambah baris lain).
+alter table public.visitor_stats
+  drop constraint if exists visitor_stats_single_row;
+alter table public.visitor_stats
+  add constraint visitor_stats_single_row check (id = 1);
+
+-- RLS diaktifkan dan TANPA policy apa pun:
+-- publik tidak boleh SELECT/INSERT/UPDATE/DELETE langsung ke tabel.
+alter table public.visitor_stats enable row level security;
+
+-- (b) Fungsi RPC: baca statistik; bila p_increment = true tambah +1.
+--     Tanggal hari ini otomatis direset bila berganti hari.
+create or replace function public.record_visit(p_increment boolean)
+returns json
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_total  bigint;
+  v_today  bigint;
+  v_date   date := current_date;
+  r        public.visitor_stats%rowtype;
+begin
+  insert into public.visitor_stats (id, total, today, today_date)
+  values (1, 0, 0, current_date)
+  on conflict (id) do nothing;
+
+  select * into r from public.visitor_stats where id = 1;
+
+  -- Hari berganti -> hitungan "hari ini" direset ke 0.
+  if r.today_date is distinct from v_date then
+    r.today := 0;
+  end if;
+
+  if p_increment then
+    r.today := r.today + 1;
+    r.total := r.total + 1;
+    update public.visitor_stats
+       set total      = r.total,
+           today      = r.today,
+           today_date = v_date,
+           updated_at = now()
+     where id = 1;
+  end if;
+
+  return json_build_object('total', r.total, 'today', r.today);
+end;
+$$;
+
+-- (c) Izinkan anon & pengguna login memanggil RPC (hanya lewat fungsi ini).
+grant execute on function public.record_visit(boolean) to anon, authenticated;
+```
+
+> **Cara kerja di sisi website:** `src/components/VisitorCounter.astro` memanggil
+> RPC ini dari browser. `localStorage` hanya dipakai sebagai **penanda** agar
+> setiap perangkat menambah **+1 per hari** (reload berulang tidak menaikkan
+> angka); angka yang ditampilkan sepenuhnya berasal dari Supabase. Bila Supabase
+> belum dikonfigurasi, komponen otomatis memakai hitungan `localStorage` lama.
+
+---
+
 ## 5. Isi konten awal (opsional)
 
 Jika tabel kosong, website tetap menampilkan **konten default** yang sudah
@@ -202,7 +281,7 @@ on conflict (section) do nothing;
 ```
 
 > Isi kolom `content` mengikuti struktur JSON di `default-content.ts`. Saat
-> staff menyimpan lewat dashboard, JSON yang sama akan di-*upsert* ke baris
+> staff menyimpan lewat dashboard, JSON yang sama akan di-_upsert_ ke baris
 > seksi tersebut.
 
 ---
@@ -242,15 +321,15 @@ Karena konten diambil dari database saat halaman diminta, proyek kini memakai
 
 ## 8. Pemecahan masalah (Troubleshooting)
 
-| Gejala | Penyebab & Solusi |
-| :--- | :--- |
-| Klik **Sign in with Google** lalu muncul `Unsupported provider: missing OAuth secret` | **Client Secret** di Authentication → Providers → Google masih kosong. Isi dengan Secret dari Google Cloud Console (lihat langkah 2), klik **Save**, muat ulang halaman. |
-| Muncul pesan `Err... invalid client` / `invalid_client` | **Client ID** (atau Secret) salah/tidak cocok di Supabase. Periksa dan salin ulang dari Google Cloud Console. |
-| Pesan `redirect_uri_mismatch` / `not_authorized` | URL callback (`https://<ref>.supabase.co/auth/v1/callback`) belum ditambahkan ke **Authorized redirect URIs** di Google Cloud Console. |
-| Konsol browser menampilkan `Failed to load resource: net::ERR_NAME_NOT_RESOLVED` (`api.countapi.xyz`) | CountAPI sudah dihapus dari kode — pencacah pengunjung kini memakai `localStorage` tanpa jaringan eksternal. Pastikan Anda memakai `npm run build` terbaru / `npm run dev`. |
-| Dashboard menampilkan "Supabase belum dikonfigurasi" | `.env` belum dibuat atau `PUBLIC_SUPABASE_URL` / `PUBLIC_SUPABASE_ANON_KEY` kosong. |
-| Setelah login muncul **"Akses Ditolak"** dan kembali ke website | Email Google Anda belum terdaftar di `site_admins`. Tambahkan: `insert into public.site_admins (email) values ('anda@...');`. |
-| Konten website tidak berubah setelah disimpan di dashboard | Pastikan policy RLS (langkah 4) mengizinkan **admin** (`is_admin()`) untuk *insert/update*, dan cek Anda sudah login dengan akun admin. |
+| Gejala                                                                                                | Penyebab & Solusi                                                                                                                                                           |
+| :---------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Klik **Sign in with Google** lalu muncul `Unsupported provider: missing OAuth secret`                 | **Client Secret** di Authentication → Providers → Google masih kosong. Isi dengan Secret dari Google Cloud Console (lihat langkah 2), klik **Save**, muat ulang halaman.    |
+| Muncul pesan `Err... invalid client` / `invalid_client`                                               | **Client ID** (atau Secret) salah/tidak cocok di Supabase. Periksa dan salin ulang dari Google Cloud Console.                                                               |
+| Pesan `redirect_uri_mismatch` / `not_authorized`                                                      | URL callback (`https://<ref>.supabase.co/auth/v1/callback`) belum ditambahkan ke **Authorized redirect URIs** di Google Cloud Console.                                      |
+| Angka pengunjung di footer tidak berubah (tetap `···`) dan konsol browser menampilkan `function public.record_visit(...) does not exist` | Tabel & fungsi RPC `record_visit` belum dibuat di Supabase. Jalankan SQL pada **§ 4.5** (tabel `visitor_stats` + fungsi + grant), lalu muat ulang halaman. |
+| Dashboard menampilkan "Supabase belum dikonfigurasi"                                                  | `.env` belum dibuat atau `PUBLIC_SUPABASE_URL` / `PUBLIC_SUPABASE_ANON_KEY` kosong.                                                                                         |
+| Setelah login muncul **"Akses Ditolak"** dan kembali ke website                                       | Email Google Anda belum terdaftar di `site_admins`. Tambahkan: `insert into public.site_admins (email) values ('anda@...');`.                                               |
+| Konten website tidak berubah setelah disimpan di dashboard                                            | Pastikan policy RLS (langkah 4) mengizinkan **admin** (`is_admin()`) untuk _insert/update_, dan cek Anda sudah login dengan akun admin.                                     |
 
 ---
 

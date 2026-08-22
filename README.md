@@ -174,18 +174,15 @@ Repo sudah di-*initialize* dengan dua commit awal. **`.gitignore`** mengecualika
 Footer menampilkan **Total pengunjung** dan **Kunjungan hari ini**, dihitung
 oleh komponen `src/components/VisitorCounter.astro`:
 
-- **Implementasi:** berbasis `localStorage` per-perangkat — **tanpa panggilan
-  jaringan eksternal**, sehingga tidak ada request yang gagal di konsol browser
-  (layanan pihak ketiga lama, CountAPI, sudah tidak stabil/tidak dapat
-  di-resolve dan dihapus).
-- **Kunjungan hari ini** otomatis reset setiap tengah malam (berdasarkan
-  tanggal lokal perangkat).
-- Setiap perangkat hanya menambah **+1 per hari** (via penanda
-  `nt_counted-YYYYMMDD`), jadi *reload* berulang tidak menaikkan angka.
-- **Catatan:** angka **total** bersifat per-perangkat (bukan jumlah pengunjung
-  unik global). Bila butuh akurasi lintas-perangkat, sambungkan ke layanan
-  pengganti (mis. tabel Supabase) dengan mengedit
-  `src/components/VisitorCounter.astro`.
+- **Implementasi:** angka tersimpan di **Supabase** (tabel `visitor_stats`) lewat
+  fungsi RPC `record_visit` (lihat `SETUP_SUPABASE.md` § 4.5), sehingga akurat
+  lintas-perangkat — bukan sekadar per-perangkat.
+- `localStorage` hanya dipakai sebagai **penanda** (`nt_counted-YYYYMMDD`) agar
+  setiap perangkat hanya menambah **+1 per hari**; *reload* berulang tidak
+  menaikkan angka.
+- **Kunjungan hari ini** otomatis reset setiap tengah malam (waktu server).
+- Bila Supabase belum dikonfigurasi, komponen otomatis memakai hitungan
+  `localStorage` lama sebagai cadangan.
 
 ---
 

@@ -1,14 +1,13 @@
 ---
 // Pencacah pengunjung (global) di footer.
 //
-// IMPLEMENTASI: berbasis localStorage per-perangkat — tanpa panggilan jaringan
-// eksternal, sehingga tidak ada request yang gagal di konsol browser.
-// - "Kunjungan hari ini" otomatis reset setiap tengah malam (berdasarkan tanggal).
-// - Setiap perangkat hanya menambah +1 per hari.
-//
-// Catatan: angka "total" adalah jumlah per-perangkat, bukan jumlah pengunjung
-// unik global. Bila ingin akurasi antar-perangkat, ganti dengan layanan pihak
-// ketiga lain (mis. Supabase) — namun pastikan layanan itu dapat di-resolve.
+// IMPLEMENTASI: berbasis Supabase — angka "Kunjungan hari ini" dan "Total
+// pengunjung" tersimpan di tabel `visitor_stats` (lihat SETUP_SUPABASE.md),
+// sehingga akurat lintas-perangkat, bukan sekadar per-perangkat.
+// - Setiap perangkat hanya menambah +1 per hari (penanda di localStorage),
+//   jadi reload berulang tidak menaikkan angka.
+// - "Kunjungan hari ini" otomatis reset setiap tengah malam (waktu server).
+// - Bila Supabase belum dikonfigurasi, fallback ke hitungan localStorage lama.
 ---
 
 <div class="flex flex-wrap items-center gap-x-8 gap-y-4 text-sm">
@@ -41,20 +40,30 @@
 </div>
 
 <script>
-  // Pencacah pengunjung mandiri via localStorage (tanpa jaringan eksternal).
-  const now = new Date();
+  import { isSupabaseConfigured, supabase } from '../lib/supabase';
 
-  // Kunci yang memuat tanggal "hari ini" agar hitungan harian direset otomatis.
+  const now = new Date();
+  // Tanggal "hari ini" (YYYYMMDD) untuk penanda dedup per perangkat.
   const ymd =
     now.getFullYear() +
     String(now.getMonth() + 1).padStart(2, '0') +
     String(now.getDate()).padStart(2, '0');
 
+  // Penanda bahwa perangkat ini sudah dihitung hari ini (hindari +1 saat reload).
+  const COUNT_MARK = 'nt_counted_' + ymd;
+
+  // Kunci fallback (dipakai hanya bila Supabase belum dikonfigurasi).
   const TOTAL_KEY = 'nt_total';
   const TODAY_KEY = 'nt_today';
   const TODAY_DATE_KEY = 'nt_today_date';
-  // Tandai bahwa perangkat ini sudah dihitung hari ini.
-  const COUNT_MARK = 'nt_counted_' + ymd;
+
+  const totalEl = document.getElementById('visit-total') as HTMLElement | null;
+  const todayEl = document.getElementById('visit-today') as HTMLElement | null;
+
+  function show(total: number, today: number) {
+    if (totalEl) totalEl.textContent = total.toLocaleString('id-ID');
+    if (todayEl) todayEl.textContent = today.toLocaleString('id-ID');
+  }
 
   function readRaw(key: string): string | null {
     try {
@@ -63,9 +72,9 @@
       return null;
     }
   }
-  function writeInt(key: string, val: number) {
+  function writeRaw(key: string, val: string) {
     try {
-      localStorage.setItem(key, String(val));
+      localStorage.setItem(key, val);
     } catch {
       /* abaikan bila storage penuh/diblokir */
     }
@@ -75,30 +84,52 @@
     return Number.isFinite(v) ? v : 0;
   }
 
-  let total = readCount(TOTAL_KEY);
-  let today = readCount(TODAY_KEY);
+  // Fallback bila Supabase belum dikonfigurasi: perilaku lama (localStorage).
+  function localStorageFallback() {
+    let total = readCount(TOTAL_KEY);
+    let today = readCount(TODAY_KEY);
 
-  // Jika tanggal sudah berganti (hari baru), reset hitungan hari ini.
-  if (readRaw(TODAY_DATE_KEY) !== ymd) {
-    today = 0;
+    // Hari berganti -> reset hitungan hari ini.
+    if (readRaw(TODAY_DATE_KEY) !== ymd) {
+      today = 0;
+      writeRaw(TODAY_DATE_KEY, ymd);
+    }
+
+    // +1 sekali per perangkat per hari.
+    if (readRaw(COUNT_MARK) === null) {
+      total += 1;
+      today += 1;
+      writeRaw(TOTAL_KEY, String(total));
+      writeRaw(TODAY_KEY, String(today));
+      writeRaw(COUNT_MARK, '1');
+    }
+    show(total, today);
+  }
+
+  async function init() {
+    if (!isSupabaseConfigured || !supabase) {
+      localStorageFallback();
+      return;
+    }
+
+    // Sudah dihitung hari ini? -> cukup baca, tanpa menambah angka global.
+    const alreadyCounted = readRaw(COUNT_MARK) !== null;
+
     try {
-      localStorage.setItem(TODAY_DATE_KEY, ymd);
+      const { data, error } = await supabase.rpc('record_visit', {
+        p_increment: !alreadyCounted,
+      });
+      if (error) throw error;
+      if (data && typeof data.total === 'number' && typeof data.today === 'number') {
+        show(data.total, data.today);
+      }
+      // Catat bahwa perangkat ini sudah dihitung (baru setelah RPC sukses).
+      if (!alreadyCounted) writeRaw(COUNT_MARK, '1');
     } catch {
-      /* abaikan */
+      // Jika koneksi/RPC gagal, tampilkan angka lokal sebagai cadangan.
+      localStorageFallback();
     }
   }
 
-  // Tambahkan +1 sekali per perangkat per hari.
-  if (readRaw(COUNT_MARK) === null) {
-    total += 1;
-    today += 1;
-    writeInt(TOTAL_KEY, total);
-    writeInt(TODAY_KEY, today);
-    writeInt(COUNT_MARK, 1);
-  }
-
-  const totalEl = document.getElementById('visit-total') as HTMLElement | null;
-  const todayEl = document.getElementById('visit-today') as HTMLElement | null;
-  if (totalEl) totalEl.textContent = total.toLocaleString('id-ID');
-  if (todayEl) todayEl.textContent = today.toLocaleString('id-ID');
+  init();
 </script>
